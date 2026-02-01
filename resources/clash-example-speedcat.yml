@@ -1,5 +1,5 @@
 #---------------------------------------------------#
-# 更新订阅：2026-01-30 10:21:30
+# 更新订阅：2026-01-31 10:35:52
 # 订阅链接：https://scdy03.scsub.com//apiv2/dflxfh7cmllsdb9y?clash=1
 #---------------------------------------------------#
 
@@ -45,7 +45,7 @@ dns:
 
 proxies:
   - {"name":"最新网址: scweb01.speedcat.la","type":"ss","server":"scm83sdoai5ms7ss.s2c5n1o1d2e4.com","port":57001,"cipher":"chacha20-ietf-poly1305","password":"2fugsbv2vf","udp":true}
-  - {"name":"剩余流量: 50GB","type":"ss","server":"scm83sdoai5ms7ss.s2c5n1o1d2e4.com","port":57001,"cipher":"chacha20-ietf-poly1305","password":"2fugsbv2vf","udp":true}
+  - {"name":"剩余流量: 48.22GB","type":"ss","server":"scm83sdoai5ms7ss.s2c5n1o1d2e4.com","port":57001,"cipher":"chacha20-ietf-poly1305","password":"2fugsbv2vf","udp":true}
   - {"name":"过期时间: 2026-09-22 17:22:51","type":"ss","server":"scm83sdoai5ms7ss.s2c5n1o1d2e4.com","port":57001,"cipher":"chacha20-ietf-poly1305","password":"2fugsbv2vf","udp":true}
   - {"name":"香港-01","type":"ss","server":"scm83sdoai5ms7ss.s2c5n1o1d2e4.com","port":57001,"cipher":"chacha20-ietf-poly1305","password":"2fugsbv2vf","udp":true}
   - {"name":"香港-02","type":"ss","server":"scm83sdoai5ms7ss.s2c5n1o1d2e4.com","port":57002,"cipher":"chacha20-ietf-poly1305","password":"2fugsbv2vf","udp":true}
@@ -140,7 +140,7 @@ proxy-groups:
   type: select
   proxies:
     - '最新网址: scweb01.speedcat.la'
-    - '剩余流量: 50GB'
+    - '剩余流量: 48.22GB'
     - '过期时间: 2026-09-22 17:22:51'
     - 香港-01
     - 香港-02
@@ -268,7 +268,7 @@ proxy-groups:
     - 日本负载组
     - 美国负载组
     - '最新网址: scweb01.speedcat.la'
-    - '剩余流量: 50GB'
+    - '剩余流量: 48.22GB'
     - '过期时间: 2026-09-22 17:22:51'
     - 香港-01
     - 香港-02
@@ -356,7 +356,7 @@ proxy-groups:
     - 日本负载组
     - 美国负载组
     - '最新网址: scweb01.speedcat.la'
-    - '剩余流量: 50GB'
+    - '剩余流量: 48.22GB'
     - '过期时间: 2026-09-22 17:22:51'
     - 香港-01
     - 香港-02
