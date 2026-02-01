@@ -1,0 +1,71 @@
+{
+  "tabs": {
+    "main": "Dashboard",
+    "subscriptions": "Subscriptions",
+    "settings": "Settings"
+  },
+  "main": {
+    "title": "Hangar",
+    "subtitle": "AI-Powered Clash Config Manager",
+    "ai_input_placeholder": "Describe your needs, e.g.: Route Google through Taiwan nodes",
+    "generate": "Generate",
+    "server_control": "Server Control",
+    "server_start": "Start Server",
+    "server_stop": "Stop Server",
+    "server_running": "Running",
+    "server_stopped": "Stopped",
+    "subscription_url": "Subscription URL",
+    "copy_url": "Copy Link",
+    "open_editor": "Open in Editor",
+    "version_history": "Version History",
+    "config_preview": "Config Preview"
+  },
+  "subscriptions": {
+    "title": "Subscription Management",
+    "add": "Add Subscription",
+    "name": "Name",
+    "url": "URL",
+    "status": "Status",
+    "nodes": "Nodes",
+    "last_updated": "Last Updated",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "enable": "Enable",
+    "disable": "Disable",
+    "edit": "Edit",
+    "delete": "Delete",
+    "refresh_all": "Refresh All",
+    "export": "Export",
+    "import": "Import",
+    "no_subscriptions": "No subscriptions yet. Click \"Add Subscription\" to start.",
+    "confirm_delete": "Are you sure you want to delete this subscription?"
+  },
+  "settings": {
+    "title": "Settings",
+    "llm_config": "LLM Configuration",
+    "api_base_url": "API Base URL",
+    "api_key": "API Key",
+    "model": "Model",
+    "test_connection": "Test Connection",
+    "server_config": "Server Configuration",
+    "port": "Port",
+    "bind_address": "Bind Address",
+    "rule_library": "Rule Library",
+    "builtin_rules": "Built-in Rules",
+    "remote_rules": "Remote Rule Sources",
+    "add_rule_source": "Add Rule Source",
+    "refresh_rules": "Refresh Rules",
+    "language": "Language",
+    "follow_system": "Follow System",
+    "data_directory": "Data Directory",
+    "reset_data": "Reset Application Data"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "success": "Success",
+    "error": "Error",
+    "loading": "Loading..."
+  }
+}

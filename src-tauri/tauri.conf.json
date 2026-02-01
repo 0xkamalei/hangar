@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Proxy Subscription Manager",
+  "productName": "Hangar",
   "version": "0.1.0",
-  "identifier": "com.lei.proxy-sub-manager",
+  "identifier": "com.hangar.app",
   "build": {
     "beforeDevCommand": "bun run dev:frontend",
     "devUrl": "http://localhost:1420",
@@ -12,9 +12,9 @@
   "app": {
     "windows": [
       {
-        "title": "Proxy Subscription Manager",
-        "width": 800,
-        "height": 600,
+        "title": "Hangar",
+        "width": 900,
+        "height": 700,
         "titleBarStyle": "Overlay",
         "hiddenTitle": true
       }
@@ -32,11 +32,6 @@
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
-    ],
-    "resources": [
-      "../subscriptions.json",
-      "../_docs/basic.yml",
-      "../basic_test.yml"
     ]
   }
 }

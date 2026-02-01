@@ -1,0 +1,71 @@
+{
+  "tabs": {
+    "main": "主界面",
+    "subscriptions": "机场管理",
+    "settings": "设置"
+  },
+  "main": {
+    "title": "Hangar",
+    "subtitle": "AI-Powered Clash Config Manager",
+    "ai_input_placeholder": "描述你的需求，例如：让 Google 走台湾节点",
+    "generate": "生成",
+    "server_control": "服务器控制",
+    "server_start": "启动服务器",
+    "server_stop": "停止服务器",
+    "server_running": "运行中",
+    "server_stopped": "已停止",
+    "subscription_url": "订阅地址",
+    "copy_url": "复制链接",
+    "open_editor": "在编辑器中打开",
+    "version_history": "版本历史",
+    "config_preview": "配置预览"
+  },
+  "subscriptions": {
+    "title": "订阅管理",
+    "add": "添加订阅",
+    "name": "订阅名称",
+    "url": "订阅链接",
+    "status": "状态",
+    "nodes": "节点数",
+    "last_updated": "最后更新",
+    "enabled": "启用",
+    "disabled": "禁用",
+    "enable": "启用",
+    "disable": "禁用",
+    "edit": "编辑",
+    "delete": "删除",
+    "refresh_all": "刷新全部",
+    "export": "导出",
+    "import": "导入",
+    "no_subscriptions": "暂无订阅，点击\"添加订阅\"按钮开始",
+    "confirm_delete": "确定要删除这个订阅吗？"
+  },
+  "settings": {
+    "title": "设置",
+    "llm_config": "LLM 配置",
+    "api_base_url": "API Base URL",
+    "api_key": "API Key",
+    "model": "模型",
+    "test_connection": "测试连接",
+    "server_config": "服务器配置",
+    "port": "端口号",
+    "bind_address": "绑定地址",
+    "rule_library": "规则库管理",
+    "builtin_rules": "内置规则",
+    "remote_rules": "在线规则源",
+    "add_rule_source": "添加规则源",
+    "refresh_rules": "刷新规则",
+    "language": "语言设置",
+    "follow_system": "跟随系统",
+    "data_directory": "数据目录",
+    "reset_data": "重置应用数据"
+  },
+  "common": {
+    "save": "保存",
+    "cancel": "取消",
+    "confirm": "确认",
+    "success": "成功",
+    "error": "错误",
+    "loading": "加载中..."
+  }
+}

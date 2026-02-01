@@ -1,8 +1,12 @@
+pub mod ai;
 pub mod config;
 pub mod proxy;
+pub mod rules;
 pub mod server;
+pub mod storage;
 pub mod subscription;
 pub mod types;
+pub mod version;
 
 use config::{load_app_config, load_basic_config, save_config};
 use proxy::merge_configs;
@@ -219,92 +223,81 @@ async fn get_server_status() -> Result<bool, String> {
 }
 
 #[tauri::command]
-fn get_subscriptions(app_handle: tauri::AppHandle) -> Result<Vec<types::Subscription>, String> {
-    let config_path = get_config_path(&app_handle)?;
-    
-    match load_app_config(&config_path) {
-        Ok(config) => Ok(config.subscriptions),
-        Err(_) => Ok(vec![]) // 如果文件不存在，返回空列表
-    }
+fn get_subscriptions() -> Result<Vec<types::Subscription>, String> {
+    storage::load_subscriptions()
+        .map_err(|e| format!("Failed to load subscriptions: {}", e))
 }
 
 #[tauri::command]
-fn add_subscription(app_handle: tauri::AppHandle, name: String, url: String) -> Result<String, String> {
-    let config_path = get_config_path(&app_handle)?;
-    
-    let mut config = load_app_config(&config_path)
-        .map_err(|e| format!("加载配置失败: {}", e))?;
-    
-    config.subscriptions.push(types::Subscription {
+fn add_subscription(name: String, url: String) -> Result<String, String> {
+    let mut subscriptions = storage::load_subscriptions()
+        .map_err(|e| format!("Failed to load subscriptions: {}", e))?;
+
+    let id = uuid::Uuid::new_v4().to_string();
+
+    subscriptions.push(types::Subscription {
+        id,
         name,
         url,
         enabled: true,
+        last_updated: None,
+        node_count: None,
     });
-    
-    // 保存配置
-    let json = serde_json::to_string_pretty(&config)
-        .map_err(|e| format!("序列化配置失败: {}", e))?;
-    std::fs::write(&config_path, json)
-        .map_err(|e| format!("保存配置失败: {}", e))?;
-    
+
+    storage::save_subscriptions(&subscriptions)
+        .map_err(|e| format!("Failed to save subscriptions: {}", e))?;
+
     Ok("✅ 订阅添加成功".to_string())
 }
 
 #[tauri::command]
-fn update_subscription(app_handle: tauri::AppHandle, index: usize, name: String, url: String, enabled: bool) -> Result<String, String> {
-    let config_path = get_config_path(&app_handle)?;
-    
-    let mut config = load_app_config(&config_path)
-        .map_err(|e| format!("加载配置失败: {}", e))?;
-    
-    if index >= config.subscriptions.len() {
+fn update_subscription(index: usize, name: String, url: String, enabled: bool) -> Result<String, String> {
+    let mut subscriptions = storage::load_subscriptions()
+        .map_err(|e| format!("Failed to load subscriptions: {}", e))?;
+
+    if index >= subscriptions.len() {
         return Err("订阅索引超出范围".to_string());
     }
-    
-    config.subscriptions[index] = types::Subscription {
+
+    let id = subscriptions[index].id.clone();
+    subscriptions[index] = types::Subscription {
+        id,
         name,
         url,
         enabled,
+        last_updated: None,
+        node_count: None,
     };
-    
-    // 保存配置
-    let json = serde_json::to_string_pretty(&config)
-        .map_err(|e| format!("序列化配置失败: {}", e))?;
-    std::fs::write(&config_path, json)
-        .map_err(|e| format!("保存配置失败: {}", e))?;
-    
+
+    storage::save_subscriptions(&subscriptions)
+        .map_err(|e| format!("Failed to save subscriptions: {}", e))?;
+
     Ok("✅ 订阅更新成功".to_string())
 }
 
 #[tauri::command]
-fn delete_subscription(app_handle: tauri::AppHandle, index: usize) -> Result<String, String> {
+fn delete_subscription(index: usize) -> Result<String, String> {
     eprintln!("🔍 delete_subscription 被调用，index: {}", index);
-    
-    let config_path = get_config_path(&app_handle)?;
-    eprintln!("✓ 配置路径: {}", config_path);
-    
-    let mut config = load_app_config(&config_path)
-        .map_err(|e| format!("加载配置失败: {}", e))?;
-    
-    eprintln!("✓ 当前订阅数量: {}", config.subscriptions.len());
-    
-    if index >= config.subscriptions.len() {
-        let err = format!("订阅索引超出范围: index={}, len={}", index, config.subscriptions.len());
+
+    let mut subscriptions = storage::load_subscriptions()
+        .map_err(|e| format!("Failed to load subscriptions: {}", e))?;
+
+    eprintln!("✓ 当前订阅数量: {}", subscriptions.len());
+
+    if index >= subscriptions.len() {
+        let err = format!("订阅索引超出范围: index={}, len={}", index, subscriptions.len());
         eprintln!("❌ {}", err);
         return Err(err);
     }
-    
-    let removed = config.subscriptions.remove(index);
+
+    let removed = subscriptions.remove(index);
     eprintln!("✓ 已删除订阅: {}", removed.name);
-    
-    // 保存配置
-    let json = serde_json::to_string_pretty(&config)
-        .map_err(|e| format!("序列化配置失败: {}", e))?;
-    std::fs::write(&config_path, json)
-        .map_err(|e| format!("保存配置失败: {}", e))?;
-    
+
+    storage::save_subscriptions(&subscriptions)
+        .map_err(|e| format!("Failed to save subscriptions: {}", e))?;
+
     eprintln!("✓ 配置已保存");
-    
+
     Ok("✅ 订阅删除成功".to_string())
 }
 
@@ -313,19 +306,125 @@ fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
+// AI Commands
+#[tauri::command]
+async fn generate_ai_patch(prompt: String) -> Result<ai::AiPatchResult, String> {
+    ai::generate_config_patch(&prompt)
+        .await
+        .map_err(|e| format!("AI generation failed: {}", e))
+}
+
+#[tauri::command]
+async fn test_llm_connection(base_url: String, api_key: String, model: String) -> Result<String, String> {
+    ai::test_llm_connection(&base_url, &api_key, &model)
+        .await
+        .map_err(|e| format!("{}", e))
+}
+
+// Config Commands
+#[tauri::command]
+fn get_hangar_config() -> Result<types::HangarConfig, String> {
+    storage::load_hangar_config()
+        .map_err(|e| format!("Failed to load config: {}", e))
+}
+
+#[tauri::command]
+fn save_hangar_config(config: types::HangarConfig) -> Result<String, String> {
+    storage::save_hangar_config(&config)
+        .map_err(|e| format!("Failed to save config: {}", e))?;
+    Ok("配置已保存".to_string())
+}
+
+// Version Commands
+#[tauri::command]
+fn list_versions() -> Result<Vec<types::ConfigVersion>, String> {
+    version::list_versions()
+        .map_err(|e| format!("Failed to list versions: {}", e))
+}
+
+#[tauri::command]
+fn get_version_content(id: String) -> Result<String, String> {
+    version::get_version_content(&id)
+        .map_err(|e| format!("Failed to get version: {}", e))
+}
+
+#[tauri::command]
+fn rollback_version(id: String) -> Result<String, String> {
+    version::rollback_to_version(&id)
+        .map_err(|e| format!("Failed to rollback: {}", e))?;
+    Ok("已回退到指定版本".to_string())
+}
+
+#[tauri::command]
+fn delete_version(id: String) -> Result<String, String> {
+    version::delete_version(&id)
+        .map_err(|e| format!("Failed to delete version: {}", e))?;
+    Ok("版本已删除".to_string())
+}
+
+// Rules Commands
+#[tauri::command]
+fn get_builtin_rules() -> Vec<rules::BuiltinRule> {
+    rules::get_default_builtin_rules()
+}
+
+#[tauri::command]
+fn get_rule_sources() -> Result<Vec<rules::RuleSource>, String> {
+    rules::load_rule_sources()
+        .map_err(|e| format!("Failed to load rule sources: {}", e))
+}
+
+#[tauri::command]
+fn add_rule_source(name: String, url: String) -> Result<rules::RuleSource, String> {
+    rules::add_rule_source(name, url)
+        .map_err(|e| format!("Failed to add rule source: {}", e))
+}
+
+#[tauri::command]
+fn remove_rule_source(id: String) -> Result<String, String> {
+    rules::remove_rule_source(&id)
+        .map_err(|e| format!("Failed to remove rule source: {}", e))?;
+    Ok("规则源已删除".to_string())
+}
+
+#[tauri::command]
+async fn refresh_rules() -> Result<String, String> {
+    rules::refresh_all_rules()
+        .await
+        .map_err(|e| format!("Failed to refresh rules: {}", e))?;
+    Ok("规则刷新完成".to_string())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
-            greet, 
-            start_proxy_server, 
+            greet,
+            start_proxy_server,
             stop_proxy_server,
             get_server_status,
             get_subscriptions,
             add_subscription,
             update_subscription,
-            delete_subscription
+            delete_subscription,
+            // AI commands
+            generate_ai_patch,
+            test_llm_connection,
+            // Config commands
+            get_hangar_config,
+            save_hangar_config,
+            // Version commands
+            list_versions,
+            get_version_content,
+            rollback_version,
+            delete_version,
+            // Rules commands
+            get_builtin_rules,
+            get_rule_sources,
+            add_rule_source,
+            remove_rule_source,
+            refresh_rules
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

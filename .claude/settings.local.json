@@ -1,7 +1,15 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git mv:*)"
+      "Bash(git mv:*)",
+      "Bash(bun add:*)",
+      "Bash(bunx tailwindcss:*)",
+      "Bash(cargo add:*)",
+      "Bash(bun run build)",
+      "Bash(cargo check:*)",
+      "Bash(cargo update:*)",
+      "Bash(rustc:*)",
+      "Bash(cargo --version)"
     ]
   }
 }
