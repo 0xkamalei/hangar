@@ -17,7 +17,7 @@ echo -e "${BLUE}  代理订阅管理器 DMG 打包工具  ${NC}"
 echo -e "${BLUE}================================${NC}\n"
 
 # 配置变量
-APP_NAME="proxy-sub-manager"
+APP_NAME="hangar"
 APP_DISPLAY_NAME="代理订阅管理器"
 VERSION="0.1.0"
 BUNDLE_DIR="src-tauri/target/release/bundle"
@@ -78,7 +78,7 @@ ${APP_DISPLAY_NAME} v${VERSION}
 
 在 Clash Verge 中添加上述订阅链接即可使用。
 
-项目地址: https://github.com/yourusername/proxy-sub-manager
+项目地址: https://github.com/yourusername/hangar
 License: MIT
 EOF
 

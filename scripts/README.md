@@ -22,7 +22,7 @@ npm run build:dmg
 - ✅ 自动压缩优化
 
 **产物:**
-- `src-tauri/target/release/bundle/dmg/proxy-sub-manager_0.1.0_custom_arm64.dmg`
+- `src-tauri/target/release/bundle/dmg/hangar_0.1.0_custom_arm64.dmg`
 
 ---
 
@@ -44,7 +44,7 @@ npm run build:dmg:fancy
 - ⚠️  需要更多时间
 
 **产物:**
-- `src-tauri/target/release/bundle/dmg/proxy-sub-manager_0.1.0_arm64.dmg`
+- `src-tauri/target/release/bundle/dmg/hangar_0.1.0_arm64.dmg`
 
 ---
 
@@ -118,10 +118,10 @@ npm run build:all      # 构建 + DMG
 ```
 src-tauri/target/release/bundle/
 ├── macos/
-│   └── proxy-sub-manager.app          # macOS 应用包
+│   └── hangar.app          # macOS 应用包
 └── dmg/
-    ├── proxy-sub-manager_0.1.0_aarch64.dmg       # Tauri 自动生成
-    └── proxy-sub-manager_0.1.0_custom_arm64.dmg  # 自定义脚本生成
+    ├── hangar_0.1.0_aarch64.dmg       # Tauri 自动生成
+    └── hangar_0.1.0_custom_arm64.dmg  # 自定义脚本生成
 ```
 
 ---
@@ -149,13 +149,13 @@ src-tauri/target/release/bundle/
 **A:** 运行以下命令清理挂载的镜像：
 ```bash
 hdiutil detach /Volumes/代理订阅管理器 -force
-rm -f /tmp/proxy-sub-manager_tmp.dmg
+rm -f /tmp/hangar_tmp.dmg
 ```
 
 ### Q: 应用无法打开，提示"来自身份不明的开发者"
 **A:** 在终端运行：
 ```bash
-xattr -cr /Applications/proxy-sub-manager.app
+xattr -cr /Applications/hangar.app
 ```
 
 ### Q: 如何减小 DMG 文件大小？

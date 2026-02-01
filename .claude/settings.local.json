@@ -5,11 +5,29 @@
       "Bash(bun add:*)",
       "Bash(bunx tailwindcss:*)",
       "Bash(cargo add:*)",
-      "Bash(bun run build)",
       "Bash(cargo check:*)",
       "Bash(cargo update:*)",
+      "Bash(cargo test:*)",
+      "Bash(cargo clippy:*)",
+      "Bash(cargo fmt:*)",
+      "Bash(cargo clean:*)",
+      "Bash(cargo run:*)",
+      "Bash(cargo build:*)",
       "Bash(rustc:*)",
-      "Bash(cargo --version)"
+      "Bash(cargo --version)",
+      "Bash(bun run *)",
+      "Bash(bun install)",
+      "Bash(npx tsc:*)",
+      "Bash(lsof:*)",
+      "Bash(kill:*)",
+      "Bash(tail:*)",
+      "Bash(rm:*)",
+      "mcp__ide__getDiagnostics",
+      "Bash(osascript:*)",
+      "Bash(pkill:*)",
+      "Bash(screencapture:*)",
+      "Bash(curl:*)",
+      "Bash(pgrep:*)"
     ]
   }
 }

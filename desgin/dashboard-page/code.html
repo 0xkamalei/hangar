@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Hangar Dashboard - AI Configuration Manager</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                        "surface-dark": "#1c1f27",
+                        "border-dark": "#3b4354",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom scrollbar for dark mode */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #101622;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3b4354;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4b5563;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen">
+<div class="flex h-screen overflow-hidden">
+<!-- Sidebar Navigation -->
+<aside class="w-64 border-r border-slate-200 dark:border-border-dark flex flex-col bg-white dark:bg-background-dark">
+<div class="p-6 flex flex-col gap-6 h-full">
+<!-- Logo -->
+<div class="flex items-center gap-3">
+<div class="bg-primary rounded-lg p-2 flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-2xl">flight_takeoff</span>
+</div>
+<div class="flex flex-col">
+<h1 class="text-white text-lg font-bold leading-tight">Hangar</h1>
+<p class="text-[#9da6b9] text-xs font-normal">AI Config Manager</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="flex flex-col gap-2 mt-4">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary border border-primary/20" href="#">
+<span class="material-symbols-outlined text-[24px]">dashboard</span>
+<p class="text-sm font-semibold">Dashboard</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 hover:bg-slate-100 dark:text-[#9da6b9] dark:hover:bg-surface-dark transition-colors" href="#">
+<span class="material-symbols-outlined text-[24px]">link</span>
+<p class="text-sm font-medium">Subscriptions</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 hover:bg-slate-100 dark:text-[#9da6b9] dark:hover:bg-surface-dark transition-colors" href="#">
+<span class="material-symbols-outlined text-[24px]">settings</span>
+<p class="text-sm font-medium">Settings</p>
+</a>
+</nav>
+<div class="mt-auto pt-6 border-t border-slate-200 dark:border-border-dark">
+<div class="flex items-center gap-3 px-2">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-primary/30" data-alt="User avatar profile picture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBVNcrKrXq-fa28nX-X42NhffxA9iVPhm-Yh1zNspe5rGUOq1XeKXbgeiSdj1OqDEOLrevjzty_738guOWJwbTK7DQKVC1-laXTkMyzvYaz2uxbt7SNyR1CtMMdW8ruPpoHRcTcp58iVJXro-TqJDSq5Xm5YypgdMfL27_qyJTasRwbxXDX6sSNmOVzdz_iwyKqKuK7U7u6oGvf4weifkBasOiXc107tY-3gBNksmzYS-ehYbFfPBaahTTP1rP4jinsED7LlJjyHma1");'></div>
+<div class="flex flex-col">
+<p class="text-white text-sm font-medium">Alex Chen</p>
+<p class="text-[#9da6b9] text-xs">Pro Plan</p>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col overflow-y-auto bg-background-light dark:bg-background-dark">
+<!-- AI Composer Header -->
+<header class="sticky top-0 z-10 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md px-8 py-6">
+<div class="max-w-4xl mx-auto">
+<div class="flex items-center px-0 py-0 gap-3 @container">
+<label class="flex flex-col min-w-40 h-full flex-1">
+<div class="flex w-full flex-1 items-stretch rounded-xl overflow-hidden shadow-2xl shadow-primary/5">
+<div class="flex border border-slate-200 dark:border-border-dark bg-white dark:bg-surface-dark justify-center items-start pt-[18px] px-4 border-r-0">
+<div class="bg-primary/10 text-primary rounded-full size-10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined">auto_awesome</span>
+</div>
+</div>
+<div class="flex flex-1 flex-col">
+<textarea class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden text-slate-900 dark:text-white focus:outline-0 focus:ring-0 border border-slate-200 dark:border-border-dark bg-white dark:bg-surface-dark focus:border-primary h-auto placeholder:text-slate-400 dark:placeholder:text-[#556077] border-l-0 pl-2 border-b-0 text-base font-normal leading-normal pt-[22px]" placeholder="How can I help with your configuration today? (e.g., 'Route all Netflix traffic through Japan nodes')"></textarea>
+<div class="flex border border-slate-200 dark:border-border-dark bg-white dark:bg-surface-dark justify-end pr-[15px] border-l-0 border-t-0 px-[15px] pb-[15px]">
+<div class="flex items-center gap-4 justify-end">
+<div class="flex items-center gap-1">
+<button class="flex items-center justify-center p-2 text-slate-400 dark:text-[#9da6b9] hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">mic</span>
+</button>
+<button class="flex items-center justify-center p-2 text-slate-400 dark:text-[#9da6b9] hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">attach_file</span>
+</button>
+</div>
+<button class="min-w-[100px] cursor-pointer flex items-center justify-center gap-2 rounded-lg h-9 px-4 bg-primary text-white text-sm font-bold leading-normal transition-transform hover:scale-[1.02] active:scale-95 shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-sm">bolt</span>
+<span>Generate</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</label>
+</div>
+</div>
+</header>
+<div class="px-8 pb-12">
+<div class="max-w-4xl mx-auto space-y-8">
+<!-- Section: Server Control -->
+<section>
+<h2 class="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-tight pb-4">Server Control</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<!-- Main Status Card -->
+<div class="md:col-span-2 flex items-stretch justify-between gap-6 rounded-xl border border-slate-200 dark:border-border-dark bg-white dark:bg-surface-dark p-6 shadow-sm">
+<div class="flex flex-col justify-between flex-1">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2">
+<div class="size-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
+<p class="text-slate-900 dark:text-white text-lg font-bold leading-tight">System Active</p>
+</div>
+<p class="text-slate-500 dark:text-[#9da6b9] text-sm font-normal leading-normal mt-1">
+                                            Core is running on local port <span class="text-primary font-mono font-medium">8080</span>
+</p>
+</div>
+<div class="flex gap-3 mt-6">
+<button class="flex min-w-[100px] cursor-pointer items-center justify-center rounded-lg h-10 px-5 bg-slate-100 dark:bg-[#282e39] text-slate-900 dark:text-white gap-2 text-sm font-bold transition-colors hover:bg-red-500/10 hover:text-red-500 border border-transparent dark:hover:border-red-500/30">
+<span class="material-symbols-outlined text-[20px]">stop_circle</span>
+<span>Stop Server</span>
+</button>
+<button class="flex min-w-[120px] cursor-pointer items-center justify-center rounded-lg h-10 px-5 bg-white dark:bg-transparent border border-slate-200 dark:border-border-dark text-slate-900 dark:text-white gap-2 text-sm font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined text-[20px]">edit_note</span>
+<span>Open in Editor</span>
+</button>
+</div>
+</div>
+<div class="hidden sm:block w-40 bg-center bg-no-repeat bg-cover rounded-lg overflow-hidden border border-slate-200 dark:border-border-dark" data-alt="Abstract blue network visualization pattern" style="background-image: linear-gradient(135deg, #135bec 0%, #062b7a 100%);">
+<div class="w-full h-full flex items-center justify-center opacity-30">
+<span class="material-symbols-outlined text-6xl text-white">lan</span>
+</div>
+</div>
+</div>
+<!-- Metrics/Small Stats -->
+<div class="flex flex-col gap-4">
+<div class="p-4 rounded-xl border border-slate-200 dark:border-border-dark bg-white dark:bg-surface-dark flex flex-col">
+<span class="text-[#9da6b9] text-xs font-medium uppercase tracking-wider">Active Proxies</span>
+<span class="text-2xl font-bold text-white mt-1">12 / 48</span>
+</div>
+<div class="p-4 rounded-xl border border-slate-200 dark:border-border-dark bg-white dark:bg-surface-dark flex flex-col">
+<span class="text-[#9da6b9] text-xs font-medium uppercase tracking-wider">Traffic Mode</span>
+<span class="text-xl font-bold text-primary mt-1">Smart Rule</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Section: Subscription URL -->
+<section class="max-w-2xl">
+<div class="flex flex-col gap-3">
+<label class="flex flex-col">
+<p class="text-slate-900 dark:text-white text-base font-semibold leading-normal pb-2">Local Subscription URL</p>
+<div class="flex w-full items-stretch rounded-lg shadow-sm">
+<input class="form-input flex w-full min-w-0 flex-1 overflow-hidden rounded-l-lg text-slate-900 dark:text-white border border-slate-200 dark:border-border-dark bg-white dark:bg-surface-dark focus:ring-1 focus:ring-primary focus:border-primary h-12 p-[15px] border-r-0 text-sm font-mono" readonly="" value="http://127.0.0.1:8080/config"/>
+<button class="bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark border-l-0 pr-4 pl-2 rounded-r-lg flex items-center text-slate-400 hover:text-primary transition-colors group">
+<span class="material-symbols-outlined group-active:scale-90 transition-transform">content_copy</span>
+</button>
+</div>
+</label>
+<p class="text-xs text-[#9da6b9]">Use this URL in your system Clash client to synchronize generated rules.</p>
+</div>
+</section>
+<!-- Section: Configuration Summary Details -->
+<section>
+<h2 class="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-tight pb-4">Configuration Summary</h2>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div class="flex items-center gap-4 p-4 rounded-xl border border-slate-200 dark:border-border-dark bg-white dark:bg-surface-dark">
+<div class="size-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined">description</span>
+</div>
+<div>
+<p class="text-sm font-bold text-white">Active Profile</p>
+<p class="text-xs text-[#9da6b9]">production-v2.yaml</p>
+</div>
+</div>
+<div class="flex items-center gap-4 p-4 rounded-xl border border-slate-200 dark:border-border-dark bg-white dark:bg-surface-dark">
+<div class="size-10 rounded-lg bg-orange-500/10 text-orange-500 flex items-center justify-center">
+<span class="material-symbols-outlined">update</span>
+</div>
+<div>
+<p class="text-sm font-bold text-white">Last Sync</p>
+<p class="text-xs text-[#9da6b9]">24 minutes ago</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+</main>
+<!-- Version History Sidebar -->
+<aside class="w-80 border-l border-slate-200 dark:border-border-dark flex flex-col bg-white dark:bg-background-dark overflow-hidden">
+<div class="p-6 border-b border-slate-200 dark:border-border-dark">
+<div class="flex items-center justify-between">
+<h3 class="text-white font-bold text-base">Snapshot History</h3>
+<button class="text-primary text-xs font-semibold hover:underline">View All</button>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto p-4 space-y-4">
+<!-- History Item 1 -->
+<div class="p-4 rounded-lg bg-slate-50 dark:bg-surface-dark border border-slate-200 dark:border-border-dark hover:border-primary/50 transition-colors group cursor-pointer">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[10px] uppercase tracking-wider font-bold text-primary">Active</span>
+<span class="text-[10px] text-[#9da6b9]">10:42 AM</span>
+</div>
+<p class="text-sm font-medium text-white group-hover:text-primary transition-colors">Japan Node Routing</p>
+<p class="text-xs text-[#9da6b9] mt-1 line-clamp-2 leading-relaxed">Added rules to force Netflix and Hulu through Tokyo residential nodes.</p>
+</div>
+<!-- History Item 2 -->
+<div class="p-4 rounded-lg bg-white dark:bg-transparent border border-slate-200 dark:border-border-dark hover:border-primary/50 transition-colors group cursor-pointer">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[10px] uppercase tracking-wider font-bold text-slate-400">Snapshot</span>
+<span class="text-[10px] text-[#9da6b9]">Yesterday</span>
+</div>
+<p class="text-sm font-medium text-white group-hover:text-primary transition-colors">Work Firewall Bypass</p>
+<p class="text-xs text-[#9da6b9] mt-1 line-clamp-2 leading-relaxed">Configured SSH tunneling for corporate internal assets via HK gateway.</p>
+</div>
+<!-- History Item 3 -->
+<div class="p-4 rounded-lg bg-white dark:bg-transparent border border-slate-200 dark:border-border-dark hover:border-primary/50 transition-colors group cursor-pointer">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[10px] uppercase tracking-wider font-bold text-slate-400">Snapshot</span>
+<span class="text-[10px] text-[#9da6b9]">2 days ago</span>
+</div>
+<p class="text-sm font-medium text-white group-hover:text-primary transition-colors">Clean Slate</p>
+<p class="text-xs text-[#9da6b9] mt-1 line-clamp-2 leading-relaxed">Reset all rules to default and re-imported global subscription list.</p>
+</div>
+<!-- Empty state placeholder if needed -->
+<div class="flex flex-col items-center justify-center py-8 opacity-20 text-center">
+<span class="material-symbols-outlined text-4xl mb-2">history_toggle_off</span>
+<p class="text-xs">Earlier snapshots are archived</p>
+</div>
+</div>
+<div class="p-6 bg-slate-50 dark:bg-surface-dark/30">
+<button class="w-full flex items-center justify-center gap-2 py-3 rounded-lg border border-dashed border-slate-300 dark:border-border-dark text-[#9da6b9] hover:text-white hover:border-primary transition-all text-xs font-medium">
+<span class="material-symbols-outlined text-sm">add_circle</span>
+                    Create Manual Snapshot
+                </button>
+</div>
+</aside>
+</div>
+</body></html>

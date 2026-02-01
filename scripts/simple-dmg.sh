@@ -15,7 +15,7 @@ echo -e "${BLUE}  简化 DMG 打包工具  ${NC}"
 echo -e "${BLUE}================================${NC}\n"
 
 # 配置
-APP_NAME="proxy-sub-manager"
+APP_NAME="hangar"
 VERSION="0.1.0"
 APP_PATH="src-tauri/target/release/bundle/macos/${APP_NAME}.app"
 DMG_DIR="src-tauri/target/release/bundle/dmg"

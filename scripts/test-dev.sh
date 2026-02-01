@@ -17,7 +17,7 @@ echo -e "${BLUE}================================${NC}\n"
 
 # 1. 清理旧进程
 echo -e "${YELLOW}[1/4]${NC} 清理旧进程..."
-pkill -f "proxy-sub-manager" 2>/dev/null || true
+pkill -f "hangar" 2>/dev/null || true
 pkill -f "vite" 2>/dev/null || true
 sleep 1
 echo -e "${GREEN}✓${NC} 清理完成\n"

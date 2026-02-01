@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Hangar Subscription Management</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen font-display">
+<div class="relative flex h-full min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Navigation Bar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 px-10 py-3 bg-white dark:bg-background-dark">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-4 text-primary">
+<div class="size-6">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M47.2426 24L24 47.2426L0.757355 24L24 0.757355L47.2426 24ZM12.2426 21H35.7574L24 9.24264L12.2426 21Z" fill="currentColor"></path>
+</svg>
+</div>
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Hangar</h2>
+</div>
+<div class="flex items-center gap-9">
+<a class="text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white text-sm font-medium transition-colors" href="#">Dashboard</a>
+<a class="text-primary dark:text-white text-sm font-bold border-b-2 border-primary pb-0.5" href="#">Subscriptions</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white text-sm font-medium transition-colors" href="#">Rules</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white text-sm font-medium transition-colors" href="#">Logs</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white text-sm font-medium transition-colors" href="#">Settings</a>
+</div>
+</div>
+<div class="flex flex-1 justify-end gap-4">
+<label class="flex flex-col min-w-40 h-10 max-w-64">
+<div class="flex w-full flex-1 items-stretch rounded-lg h-full bg-slate-100 dark:bg-slate-800 border border-transparent focus-within:border-primary transition-all">
+<div class="text-slate-400 flex items-center justify-center pl-3">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 border-none bg-transparent focus:ring-0 text-sm placeholder:text-slate-500 pl-2" placeholder="Search subscriptions..." value=""/>
+</div>
+</label>
+<div class="flex gap-2">
+<button class="flex items-center justify-center rounded-lg h-10 w-10 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-slate-200 dark:border-slate-700" data-alt="User avatar profile picture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDquojJKbCAymPqGIklSbIYB4Uh0qmYoRj4xjL8akgrf49NOCdfbU-7Bl8c27cL1aUZWZPZWNcAUnFoiwuMy2WOU76dfTIlz7lu1MdIK9duflj1I4YaIq13cYADgf09p99c9jqFNNrKiJyV1gn4AtWpgwCz_K7gYZy4GDUP_MG2f4MDhm69X5si02ibmMAIqMvIsotlR_koXmnu5uNR1IBTgnW-bzwUTOp_zpt7VyAIR7_eKPEzKdj5Fnn-CEqBAzAQHZ5DFTgLabK2");'></div>
+</div>
+</div>
+</header>
+<main class="flex-1 overflow-y-auto px-4 lg:px-40 py-8">
+<div class="max-w-[1200px] mx-auto">
+<!-- Page Heading -->
+<div class="flex flex-wrap justify-between items-end gap-4 mb-8">
+<div class="flex flex-col gap-2">
+<p class="text-slate-900 dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]">Subscription Management</p>
+<p class="text-slate-500 dark:text-slate-400 text-base font-normal max-w-2xl">Manage your proxy sources with AI-powered Clash configuration and smart rule editing for seamless connectivity.</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center justify-center rounded-lg h-11 px-4 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-white text-sm font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors gap-2">
+<span class="material-symbols-outlined text-lg">sync</span>
+<span class="truncate">Refresh All</span>
+</button>
+<button class="flex items-center justify-center rounded-lg h-11 px-4 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-white text-sm font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors gap-2">
+<span class="material-symbols-outlined text-lg">import_export</span>
+<span class="truncate">Import/Export List</span>
+</button>
+</div>
+</div>
+<!-- Add New Subscription Section -->
+<div class="bg-white dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-800 p-6 mb-8">
+<h2 class="text-slate-900 dark:text-white text-lg font-bold mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">add_circle</span>
+                            Add New Subscription
+                        </h2>
+<div class="flex flex-col lg:flex-row items-end gap-4">
+<label class="flex flex-col flex-1 min-w-[240px]">
+<p class="text-slate-700 dark:text-slate-300 text-sm font-medium pb-2">Subscription Name</p>
+<input class="form-input flex w-full rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-primary border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 h-12 px-4 text-sm font-normal" placeholder="e.g. Premium Proxy" value=""/>
+</label>
+<label class="flex flex-col flex-[2] min-w-[320px]">
+<p class="text-slate-700 dark:text-slate-300 text-sm font-medium pb-2">Subscription URL</p>
+<input class="form-input flex w-full rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-primary border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 h-12 px-4 text-sm font-normal" placeholder="https://example.com/sub/config/..." value=""/>
+</label>
+<div class="flex gap-3">
+<button class="flex items-center justify-center rounded-lg h-12 px-6 bg-primary text-white text-sm font-bold hover:bg-blue-600 transition-colors">
+<span>Add Subscription</span>
+</button>
+<button class="flex items-center justify-center rounded-lg h-12 px-4 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-white text-sm font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors gap-2">
+<span class="material-symbols-outlined">folder_zip</span>
+<span>Batch Import</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Subscriptions Table -->
+<div class="bg-white dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30">
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Name</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">URL</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Nodes</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Last Updated</th>
+<th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-200 dark:divide-slate-800">
+<!-- Subscription Row 1 -->
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors">
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg text-primary">
+<span class="material-symbols-outlined">rss_feed</span>
+</div>
+<span class="font-semibold text-slate-900 dark:text-white">Global Premium</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2 group">
+<span class="text-slate-500 font-mono text-sm">https://premium.net/sub/••••••••</span>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-primary">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+</div>
+</td>
+<td class="px-6 py-5 text-center">
+<span class="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-bold">128 Nodes</span>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<span class="size-2 rounded-full bg-emerald-500"></span>
+<span class="text-sm font-medium text-emerald-500">Online</span>
+</div>
+</td>
+<td class="px-6 py-5 text-sm text-slate-500 dark:text-slate-400">
+                                            2 hours ago
+                                        </td>
+<td class="px-6 py-5">
+<div class="flex items-center justify-end gap-3">
+<!-- Toggle Switch -->
+<button class="relative inline-flex h-6 w-11 items-center rounded-full bg-primary">
+<span class="inline-block h-4 w-4 transform rounded-full bg-white transition translate-x-6"></span>
+</button>
+<button class="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="p-1.5 rounded-md hover:bg-red-100 dark:hover:bg-red-900/20 text-slate-400 hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Subscription Row 2 -->
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors">
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg text-slate-500">
+<span class="material-symbols-outlined">rss_feed</span>
+</div>
+<span class="font-semibold text-slate-900 dark:text-white">Backup Source 1</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2 group">
+<span class="text-slate-500 font-mono text-sm">https://backup-proxy.io/••••••••</span>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-primary">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+</div>
+</td>
+<td class="px-6 py-5 text-center">
+<span class="bg-slate-100 dark:bg-slate-800 text-slate-500 px-3 py-1 rounded-full text-xs font-bold">45 Nodes</span>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<span class="size-2 rounded-full bg-slate-400"></span>
+<span class="text-sm font-medium text-slate-500">Offline</span>
+</div>
+</td>
+<td class="px-6 py-5 text-sm text-slate-500 dark:text-slate-400">
+                                            3 days ago
+                                        </td>
+<td class="px-6 py-5">
+<div class="flex items-center justify-end gap-3">
+<button class="relative inline-flex h-6 w-11 items-center rounded-full bg-slate-300 dark:bg-slate-700">
+<span class="inline-block h-4 w-4 transform rounded-full bg-white transition translate-x-1"></span>
+</button>
+<button class="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="p-1.5 rounded-md hover:bg-red-100 dark:hover:bg-red-900/20 text-slate-400 hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Subscription Row 3 -->
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors">
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg text-primary">
+<span class="material-symbols-outlined">rss_feed</span>
+</div>
+<span class="font-semibold text-slate-900 dark:text-white">Asian Nodes Free</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2 group">
+<span class="text-slate-500 font-mono text-sm">https://free.asia-proxy.com/••••••••</span>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-primary">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+</div>
+</td>
+<td class="px-6 py-5 text-center">
+<span class="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-bold">12 Nodes</span>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<span class="size-2 rounded-full bg-emerald-500 animate-pulse"></span>
+<span class="text-sm font-medium text-emerald-500">Updating...</span>
+</div>
+</td>
+<td class="px-6 py-5 text-sm text-slate-500 dark:text-slate-400">
+                                            Just now
+                                        </td>
+<td class="px-6 py-5">
+<div class="flex items-center justify-end gap-3">
+<button class="relative inline-flex h-6 w-11 items-center rounded-full bg-primary">
+<span class="inline-block h-4 w-4 transform rounded-full bg-white transition translate-x-6"></span>
+</button>
+<button class="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="p-1.5 rounded-md hover:bg-red-100 dark:hover:bg-red-900/20 text-slate-400 hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Footer / Pagination placeholder -->
+<div class="px-6 py-4 bg-slate-50/50 dark:bg-slate-800/30 border-t border-slate-200 dark:border-slate-800 flex justify-between items-center">
+<span class="text-xs text-slate-500 uppercase font-bold">Total: 3 Subscriptions Loaded</span>
+<div class="flex gap-1">
+<button class="size-8 flex items-center justify-center rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-lg">chevron_left</span>
+</button>
+<button class="size-8 flex items-center justify-center rounded bg-primary text-white font-bold text-xs">1</button>
+<button class="size-8 flex items-center justify-center rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-lg">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Notification Toast (Static Example) -->
+<div class="fixed bottom-8 right-8 flex flex-col gap-3">
+<div class="bg-emerald-500 text-white px-4 py-3 rounded-lg shadow-xl flex items-center gap-3 animate-in fade-in slide-in-from-right-4">
+<span class="material-symbols-outlined">check_circle</span>
+<span class="text-sm font-bold">Refreshed 128 nodes for Global Premium</span>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+</body></html>

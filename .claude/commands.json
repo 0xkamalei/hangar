@@ -1,0 +1,124 @@
+{
+  "commands": [
+    {
+      "name": "dev",
+      "description": "启动开发模式（Tauri + 前端热重载）",
+      "command": "bun run dev"
+    },
+    {
+      "name": "dev:frontend",
+      "description": "仅启动前端开发服务器（不启动 Tauri）",
+      "command": "bun run dev:frontend"
+    },
+    {
+      "name": "build",
+      "description": "构建前端资源（TypeScript 编译 + Vite 打包）",
+      "command": "bun run build"
+    },
+    {
+      "name": "build:quick",
+      "description": "快速构建（测试 + 构建 + 打包 DMG）",
+      "command": "bun run build:quick"
+    },
+    {
+      "name": "build:all",
+      "description": "完整构建流程（Tauri 构建 + DMG 打包）",
+      "command": "bun run build:all"
+    },
+    {
+      "name": "build:dmg",
+      "description": "构建简单版 DMG 安装包",
+      "command": "bun run build:dmg"
+    },
+    {
+      "name": "tauri:build",
+      "description": "Tauri 生产构建（生成 .app 文件）",
+      "command": "bun run tauri:build"
+    },
+    {
+      "name": "typecheck",
+      "description": "TypeScript 类型检查（不生成文件）",
+      "command": "npx tsc --noEmit"
+    },
+    {
+      "name": "cargo:test",
+      "description": "运行 Rust 测试",
+      "command": "cargo test --manifest-path src-tauri/Cargo.toml"
+    },
+    {
+      "name": "cargo:check",
+      "description": "Rust 代码检查（快速编译检查）",
+      "command": "cargo check --manifest-path src-tauri/Cargo.toml"
+    },
+    {
+      "name": "cargo:clippy",
+      "description": "Rust Clippy 代码检查（linting）",
+      "command": "cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings"
+    },
+    {
+      "name": "cargo:fmt",
+      "description": "格式化 Rust 代码",
+      "command": "cargo fmt --manifest-path src-tauri/Cargo.toml"
+    },
+    {
+      "name": "cargo:fmt:check",
+      "description": "检查 Rust 代码格式（不修改文件）",
+      "command": "cargo fmt --manifest-path src-tauri/Cargo.toml -- --check"
+    },
+    {
+      "name": "cli:run",
+      "description": "运行 CLI 工具（需要 subs.txt 文件）",
+      "command": "cargo run --bin cli --manifest-path src-tauri/Cargo.toml -- subs.txt"
+    },
+    {
+      "name": "cli:build",
+      "description": "构建独立 CLI 工具",
+      "command": "cargo build --bin cli --manifest-path src-tauri/Cargo.toml --release"
+    },
+    {
+      "name": "deps:add",
+      "description": "添加前端依赖（使用: /deps:add <package-name>）",
+      "command": "bun add"
+    },
+    {
+      "name": "deps:add-dev",
+      "description": "添加前端开发依赖",
+      "command": "bun add -d"
+    },
+    {
+      "name": "cargo:add",
+      "description": "添加 Rust 依赖（使用: /cargo:add <crate-name>）",
+      "command": "cargo add --manifest-path src-tauri/Cargo.toml"
+    },
+    {
+      "name": "clean",
+      "description": "清理构建缓存",
+      "command": "rm -rf dist src-tauri/target node_modules && bun install"
+    },
+    {
+      "name": "cargo:clean",
+      "description": "清理 Rust 构建产物",
+      "command": "cargo clean --manifest-path src-tauri/Cargo.toml"
+    },
+    {
+      "name": "cargo:update",
+      "description": "更新 Rust 依赖",
+      "command": "cargo update --manifest-path src-tauri/Cargo.toml"
+    },
+    {
+      "name": "logs",
+      "description": "查看 Tauri 应用日志（macOS）",
+      "command": "tail -f ~/Library/Logs/hangar/*.log"
+    },
+    {
+      "name": "kill:dev",
+      "description": "停止所有开发服务器进程",
+      "command": "lsof -ti:1420,3000 | xargs kill -9 2>/dev/null || true"
+    },
+    {
+      "name": "test:all",
+      "description": "运行所有测试（TypeScript + Rust）",
+      "command": "npx tsc --noEmit && cargo test --manifest-path src-tauri/Cargo.toml"
+    }
+  ]
+}
