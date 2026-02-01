@@ -1,0 +1,24 @@
+{
+  "subscriptions": [
+    {
+      "name": "机场A",
+      "url": "https://example.com/api/v1/client/subscribe?token=your_token",
+      "enabled": true
+    },
+    {
+      "name": "机场B",
+      "url": "https://example2.com/sub?token=your_token",
+      "enabled": true
+    }
+  ],
+  "server": {
+    "port": 8080,
+    "host": "127.0.0.1"
+  },
+  "output": {
+    "path": "output_config.yaml"
+  },
+  "basic_config": {
+    "path": "basic.yml"
+  }
+}

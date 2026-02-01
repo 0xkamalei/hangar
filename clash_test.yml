@@ -1,0 +1,907 @@
+log-level: info
+port: 7890
+allow-lan: false
+mode: Rule
+socks-port: 7891
+proxies:
+- name: '[机场1] 最新网址: scweb01.speedcat.la'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57001
+  region: CA
+  udp: true
+  cipher: chacha20-ietf-poly1305
+  password: 2fugsbv2vf
+- name: '[机场1] 剩余流量: 48.56GB'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57001
+  cipher: chacha20-ietf-poly1305
+  password: 2fugsbv2vf
+  udp: true
+- name: '[机场1] 过期时间: 2026-09-22 17:22:51'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57001
+  udp: true
+  password: 2fugsbv2vf
+  cipher: chacha20-ietf-poly1305
+- name: '[机场1] 香港-01'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57001
+  region: HK
+  password: 2fugsbv2vf
+  udp: true
+  cipher: chacha20-ietf-poly1305
+- name: '[机场1] 香港-02'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57002
+  region: HK
+  password: 2fugsbv2vf
+  udp: true
+  cipher: chacha20-ietf-poly1305
+- name: '[机场1] 香港-03'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57003
+  region: HK
+  udp: true
+  cipher: chacha20-ietf-poly1305
+  password: 2fugsbv2vf
+- name: '[机场1] 香港-04'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57004
+  region: HK
+  udp: true
+  password: 2fugsbv2vf
+  cipher: chacha20-ietf-poly1305
+- name: '[机场1] 香港-05'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57005
+  region: HK
+  password: 2fugsbv2vf
+  cipher: chacha20-ietf-poly1305
+  udp: true
+- name: '[机场1] 香港-06'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57006
+  region: HK
+  cipher: chacha20-ietf-poly1305
+  udp: true
+  password: 2fugsbv2vf
+- name: '[机场1] 香港-07'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57007
+  region: HK
+  password: 2fugsbv2vf
+  cipher: chacha20-ietf-poly1305
+  udp: true
+- name: '[机场1] 香港-08'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57008
+  region: HK
+  cipher: chacha20-ietf-poly1305
+  password: 2fugsbv2vf
+  udp: true
+- name: '[机场1] 香港-09'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57009
+  region: HK
+  udp: true
+  password: 2fugsbv2vf
+  cipher: chacha20-ietf-poly1305
+- name: '[机场1] 香港-10'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57010
+  region: HK
+  cipher: chacha20-ietf-poly1305
+  udp: true
+  password: 2fugsbv2vf
+- name: '[机场1] 香港-11'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57011
+  region: HK
+  cipher: chacha20-ietf-poly1305
+  password: 2fugsbv2vf
+  udp: true
+- name: '[机场1] 香港-12'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57012
+  region: HK
+  cipher: chacha20-ietf-poly1305
+  udp: true
+  password: 2fugsbv2vf
+- name: '[机场1] 香港-13'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57013
+  region: HK
+  password: 2fugsbv2vf
+  cipher: chacha20-ietf-poly1305
+  udp: true
+- name: '[机场1] 香港-14'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57014
+  region: HK
+  cipher: chacha20-ietf-poly1305
+  udp: true
+  password: 2fugsbv2vf
+- name: '[机场1] 香港-15'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57015
+  region: HK
+  password: 2fugsbv2vf
+  udp: true
+  cipher: chacha20-ietf-poly1305
+- name: '[机场1] 香港-16'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57016
+  region: HK
+  password: 2fugsbv2vf
+  udp: true
+  cipher: chacha20-ietf-poly1305
+- name: '[机场1] 香港-17'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57017
+  region: HK
+  password: 2fugsbv2vf
+  udp: true
+  cipher: chacha20-ietf-poly1305
+- name: '[机场1] 香港-18'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57018
+  region: HK
+  udp: true
+  password: 2fugsbv2vf
+  cipher: chacha20-ietf-poly1305
+- name: '[机场1] 香港-19'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57019
+  region: HK
+  udp: true
+  cipher: chacha20-ietf-poly1305
+  password: 2fugsbv2vf
+- name: '[机场1] 香港-20'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57020
+  region: HK
+  udp: true
+  cipher: chacha20-ietf-poly1305
+  password: 2fugsbv2vf
+- name: '[机场1] 台湾-01'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57021
+  region: TW
+  cipher: chacha20-ietf-poly1305
+  password: 2fugsbv2vf
+  udp: true
+- name: '[机场1] 台湾-02'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57022
+  region: TW
+  udp: true
+  password: 2fugsbv2vf
+  cipher: chacha20-ietf-poly1305
+- name: '[机场1] 台湾-03'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57023
+  region: TW
+  password: 2fugsbv2vf
+  udp: true
+  cipher: chacha20-ietf-poly1305
+- name: '[机场1] 台湾-04'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57024
+  region: TW
+  cipher: chacha20-ietf-poly1305
+  udp: true
+  password: 2fugsbv2vf
+- name: '[机场1] 台湾-05'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57025
+  region: TW
+  cipher: chacha20-ietf-poly1305
+  password: 2fugsbv2vf
+  udp: true
+- name: '[机场1] 台湾-06'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57026
+  region: TW
+  cipher: chacha20-ietf-poly1305
+  password: 2fugsbv2vf
+  udp: true
+- name: '[机场1] 台湾-07'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57027
+  region: TW
+  udp: true
+  cipher: chacha20-ietf-poly1305
+  password: 2fugsbv2vf
+- name: '[机场1] 台湾-08'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57028
+  region: TW
+  cipher: chacha20-ietf-poly1305
+  udp: true
+  password: 2fugsbv2vf
+- name: '[机场1] 台湾-09'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57029
+  region: TW
+  password: 2fugsbv2vf
+  udp: true
+  cipher: chacha20-ietf-poly1305
+- name: '[机场1] 台湾-10'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57030
+  region: TW
+  cipher: chacha20-ietf-poly1305
+  password: 2fugsbv2vf
+  udp: true
+- name: '[机场1] 日本-01'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57031
+  region: JP
+  cipher: chacha20-ietf-poly1305
+  password: 2fugsbv2vf
+  udp: true
+- name: '[机场1] 日本-02'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57032
+  region: JP
+  cipher: chacha20-ietf-poly1305
+  password: 2fugsbv2vf
+  udp: true
+- name: '[机场1] 日本-03'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57033
+  region: JP
+  cipher: chacha20-ietf-poly1305
+  udp: true
+  password: 2fugsbv2vf
+- name: '[机场1] 日本-04'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57034
+  region: JP
+  password: 2fugsbv2vf
+  cipher: chacha20-ietf-poly1305
+  udp: true
+- name: '[机场1] 日本-05'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57035
+  region: JP
+  password: 2fugsbv2vf
+  udp: true
+  cipher: chacha20-ietf-poly1305
+- name: '[机场1] 日本-06'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57036
+  region: JP
+  udp: true
+  cipher: chacha20-ietf-poly1305
+  password: 2fugsbv2vf
+- name: '[机场1] 日本-07'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57037
+  region: JP
+  password: 2fugsbv2vf
+  udp: true
+  cipher: chacha20-ietf-poly1305
+- name: '[机场1] 日本-08'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57038
+  region: JP
+  cipher: chacha20-ietf-poly1305
+  password: 2fugsbv2vf
+  udp: true
+- name: '[机场1] 日本-09'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57039
+  region: JP
+  password: 2fugsbv2vf
+  cipher: chacha20-ietf-poly1305
+  udp: true
+- name: '[机场1] 日本-10'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57040
+  region: JP
+  password: 2fugsbv2vf
+  cipher: chacha20-ietf-poly1305
+  udp: true
+- name: '[机场1] 新加坡-01'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57041
+  region: SG
+  cipher: chacha20-ietf-poly1305
+  password: 2fugsbv2vf
+  udp: true
+- name: '[机场1] 新加坡-02'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57042
+  region: SG
+  cipher: chacha20-ietf-poly1305
+  password: 2fugsbv2vf
+  udp: true
+- name: '[机场1] 新加坡-03'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57043
+  region: SG
+  cipher: chacha20-ietf-poly1305
+  password: 2fugsbv2vf
+  udp: true
+- name: '[机场1] 新加坡-04'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57044
+  region: SG
+  cipher: chacha20-ietf-poly1305
+  password: 2fugsbv2vf
+  udp: true
+- name: '[机场1] 新加坡-05'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57045
+  region: SG
+  cipher: chacha20-ietf-poly1305
+  password: 2fugsbv2vf
+  udp: true
+- name: '[机场1] 新加坡-06'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57046
+  region: SG
+  cipher: chacha20-ietf-poly1305
+  udp: true
+  password: 2fugsbv2vf
+- name: '[机场1] 新加坡-07'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57047
+  region: SG
+  cipher: chacha20-ietf-poly1305
+  udp: true
+  password: 2fugsbv2vf
+- name: '[机场1] 新加坡-08'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57048
+  region: SG
+  cipher: chacha20-ietf-poly1305
+  udp: true
+  password: 2fugsbv2vf
+- name: '[机场1] 新加坡-09'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57049
+  region: SG
+  password: 2fugsbv2vf
+  udp: true
+  cipher: chacha20-ietf-poly1305
+- name: '[机场1] 新加坡-10'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57050
+  region: SG
+  udp: true
+  cipher: chacha20-ietf-poly1305
+  password: 2fugsbv2vf
+- name: '[机场1] 美国-01'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57051
+  region: US
+  password: 2fugsbv2vf
+  cipher: chacha20-ietf-poly1305
+  udp: true
+- name: '[机场1] 美国-02'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57052
+  region: US
+  cipher: chacha20-ietf-poly1305
+  udp: true
+  password: 2fugsbv2vf
+- name: '[机场1] 美国-03'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57053
+  region: US
+  cipher: chacha20-ietf-poly1305
+  password: 2fugsbv2vf
+  udp: true
+- name: '[机场1] 美国-04'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57054
+  region: US
+  cipher: chacha20-ietf-poly1305
+  udp: true
+  password: 2fugsbv2vf
+- name: '[机场1] 美国-05'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57055
+  region: US
+  cipher: chacha20-ietf-poly1305
+  password: 2fugsbv2vf
+  udp: true
+- name: '[机场1] 美国-06'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57056
+  region: US
+  udp: true
+  cipher: chacha20-ietf-poly1305
+  password: 2fugsbv2vf
+- name: '[机场1] 美国-07'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57057
+  region: US
+  password: 2fugsbv2vf
+  cipher: chacha20-ietf-poly1305
+  udp: true
+- name: '[机场1] 美国-08'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57058
+  region: US
+  password: 2fugsbv2vf
+  cipher: chacha20-ietf-poly1305
+  udp: true
+- name: '[机场1] 美国-09'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57059
+  region: US
+  udp: true
+  cipher: chacha20-ietf-poly1305
+  password: 2fugsbv2vf
+- name: '[机场1] 美国-10'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57060
+  region: US
+  cipher: chacha20-ietf-poly1305
+  password: 2fugsbv2vf
+  udp: true
+- name: '[机场1] 英国-01'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57061
+  region: UK
+  password: 2fugsbv2vf
+  udp: true
+  cipher: chacha20-ietf-poly1305
+- name: '[机场1] 英国-02'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57062
+  region: UK
+  cipher: chacha20-ietf-poly1305
+  password: 2fugsbv2vf
+  udp: true
+- name: '[机场1] 英国-03'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57063
+  region: UK
+  cipher: chacha20-ietf-poly1305
+  password: 2fugsbv2vf
+  udp: true
+- name: '[机场1] 英国-04'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57064
+  region: UK
+  password: 2fugsbv2vf
+  udp: true
+  cipher: chacha20-ietf-poly1305
+- name: '[机场1] 英国-05'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57065
+  region: UK
+  cipher: chacha20-ietf-poly1305
+  password: 2fugsbv2vf
+  udp: true
+- name: '[机场1] 马来西亚-01'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57066
+  region: MY
+  udp: true
+  password: 2fugsbv2vf
+  cipher: chacha20-ietf-poly1305
+- name: '[机场1] 马来西亚-02'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57067
+  region: MY
+  cipher: chacha20-ietf-poly1305
+  udp: true
+  password: 2fugsbv2vf
+- name: '[机场1] 马来西亚-03'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57068
+  region: MY
+  password: 2fugsbv2vf
+  udp: true
+  cipher: chacha20-ietf-poly1305
+- name: '[机场1] 马来西亚-04'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57069
+  region: MY
+  udp: true
+  password: 2fugsbv2vf
+  cipher: chacha20-ietf-poly1305
+- name: '[机场1] 马来西亚-05'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57070
+  region: MY
+  cipher: chacha20-ietf-poly1305
+  password: 2fugsbv2vf
+  udp: true
+- name: '[机场1] 土耳其-01'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57097
+  region: TR
+  udp: true
+  password: 2fugsbv2vf
+  cipher: chacha20-ietf-poly1305
+- name: '[机场1] 土耳其-02'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57098
+  region: TR
+  cipher: chacha20-ietf-poly1305
+  password: 2fugsbv2vf
+  udp: true
+- name: '[机场1] 阿根廷-01'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57099
+  region: AR
+  cipher: chacha20-ietf-poly1305
+  udp: true
+  password: 2fugsbv2vf
+- name: '[机场1] 阿根廷-02'
+  type: ss
+  server: scm83sdoai5ms7ss.s2c5n1o1d2e4.com
+  port: 57100
+  region: AR
+  cipher: chacha20-ietf-poly1305
+  udp: true
+  password: 2fugsbv2vf
+proxy-groups:
+- name: CA 地区
+  type: select
+  proxies:
+  - '[机场1] 最新网址: scweb01.speedcat.la'
+- name: TW 地区
+  type: select
+  proxies:
+  - '[机场1] 台湾-01'
+  - '[机场1] 台湾-02'
+  - '[机场1] 台湾-03'
+  - '[机场1] 台湾-04'
+  - '[机场1] 台湾-05'
+  - '[机场1] 台湾-06'
+  - '[机场1] 台湾-07'
+  - '[机场1] 台湾-08'
+  - '[机场1] 台湾-09'
+  - '[机场1] 台湾-10'
+- name: SG 地区
+  type: select
+  proxies:
+  - '[机场1] 新加坡-01'
+  - '[机场1] 新加坡-02'
+  - '[机场1] 新加坡-03'
+  - '[机场1] 新加坡-04'
+  - '[机场1] 新加坡-05'
+  - '[机场1] 新加坡-06'
+  - '[机场1] 新加坡-07'
+  - '[机场1] 新加坡-08'
+  - '[机场1] 新加坡-09'
+  - '[机场1] 新加坡-10'
+- name: UK 地区
+  type: select
+  proxies:
+  - '[机场1] 英国-01'
+  - '[机场1] 英国-02'
+  - '[机场1] 英国-03'
+  - '[机场1] 英国-04'
+  - '[机场1] 英国-05'
+- name: US 地区
+  type: select
+  proxies:
+  - '[机场1] 美国-01'
+  - '[机场1] 美国-02'
+  - '[机场1] 美国-03'
+  - '[机场1] 美国-04'
+  - '[机场1] 美国-05'
+  - '[机场1] 美国-06'
+  - '[机场1] 美国-07'
+  - '[机场1] 美国-08'
+  - '[机场1] 美国-09'
+  - '[机场1] 美国-10'
+- name: JP 地区
+  type: select
+  proxies:
+  - '[机场1] 日本-01'
+  - '[机场1] 日本-02'
+  - '[机场1] 日本-03'
+  - '[机场1] 日本-04'
+  - '[机场1] 日本-05'
+  - '[机场1] 日本-06'
+  - '[机场1] 日本-07'
+  - '[机场1] 日本-08'
+  - '[机场1] 日本-09'
+  - '[机场1] 日本-10'
+- name: MY 地区
+  type: select
+  proxies:
+  - '[机场1] 马来西亚-01'
+  - '[机场1] 马来西亚-02'
+  - '[机场1] 马来西亚-03'
+  - '[机场1] 马来西亚-04'
+  - '[机场1] 马来西亚-05'
+- name: TR 地区
+  type: select
+  proxies:
+  - '[机场1] 土耳其-01'
+  - '[机场1] 土耳其-02'
+- name: AR 地区
+  type: select
+  proxies:
+  - '[机场1] 阿根廷-01'
+  - '[机场1] 阿根廷-02'
+- name: HK 地区
+  type: select
+  proxies:
+  - '[机场1] 香港-01'
+  - '[机场1] 香港-02'
+  - '[机场1] 香港-03'
+  - '[机场1] 香港-04'
+  - '[机场1] 香港-05'
+  - '[机场1] 香港-06'
+  - '[机场1] 香港-07'
+  - '[机场1] 香港-08'
+  - '[机场1] 香港-09'
+  - '[机场1] 香港-10'
+  - '[机场1] 香港-11'
+  - '[机场1] 香港-12'
+  - '[机场1] 香港-13'
+  - '[机场1] 香港-14'
+  - '[机场1] 香港-15'
+  - '[机场1] 香港-16'
+  - '[机场1] 香港-17'
+  - '[机场1] 香港-18'
+  - '[机场1] 香港-19'
+  - '[机场1] 香港-20'
+- name: 节点选择
+  type: select
+  proxies:
+  - '[机场1] 最新网址: scweb01.speedcat.la'
+  - '[机场1] 剩余流量: 48.56GB'
+  - '[机场1] 过期时间: 2026-09-22 17:22:51'
+  - '[机场1] 香港-01'
+  - '[机场1] 香港-02'
+  - '[机场1] 香港-03'
+  - '[机场1] 香港-04'
+  - '[机场1] 香港-05'
+  - '[机场1] 香港-06'
+  - '[机场1] 香港-07'
+  - '[机场1] 香港-08'
+  - '[机场1] 香港-09'
+  - '[机场1] 香港-10'
+  - '[机场1] 香港-11'
+  - '[机场1] 香港-12'
+  - '[机场1] 香港-13'
+  - '[机场1] 香港-14'
+  - '[机场1] 香港-15'
+  - '[机场1] 香港-16'
+  - '[机场1] 香港-17'
+  - '[机场1] 香港-18'
+  - '[机场1] 香港-19'
+  - '[机场1] 香港-20'
+  - '[机场1] 台湾-01'
+  - '[机场1] 台湾-02'
+  - '[机场1] 台湾-03'
+  - '[机场1] 台湾-04'
+  - '[机场1] 台湾-05'
+  - '[机场1] 台湾-06'
+  - '[机场1] 台湾-07'
+  - '[机场1] 台湾-08'
+  - '[机场1] 台湾-09'
+  - '[机场1] 台湾-10'
+  - '[机场1] 日本-01'
+  - '[机场1] 日本-02'
+  - '[机场1] 日本-03'
+  - '[机场1] 日本-04'
+  - '[机场1] 日本-05'
+  - '[机场1] 日本-06'
+  - '[机场1] 日本-07'
+  - '[机场1] 日本-08'
+  - '[机场1] 日本-09'
+  - '[机场1] 日本-10'
+  - '[机场1] 新加坡-01'
+  - '[机场1] 新加坡-02'
+  - '[机场1] 新加坡-03'
+  - '[机场1] 新加坡-04'
+  - '[机场1] 新加坡-05'
+  - '[机场1] 新加坡-06'
+  - '[机场1] 新加坡-07'
+  - '[机场1] 新加坡-08'
+  - '[机场1] 新加坡-09'
+  - '[机场1] 新加坡-10'
+  - '[机场1] 美国-01'
+  - '[机场1] 美国-02'
+  - '[机场1] 美国-03'
+  - '[机场1] 美国-04'
+  - '[机场1] 美国-05'
+  - '[机场1] 美国-06'
+  - '[机场1] 美国-07'
+  - '[机场1] 美国-08'
+  - '[机场1] 美国-09'
+  - '[机场1] 美国-10'
+  - '[机场1] 英国-01'
+  - '[机场1] 英国-02'
+  - '[机场1] 英国-03'
+  - '[机场1] 英国-04'
+  - '[机场1] 英国-05'
+  - '[机场1] 马来西亚-01'
+  - '[机场1] 马来西亚-02'
+  - '[机场1] 马来西亚-03'
+  - '[机场1] 马来西亚-04'
+  - '[机场1] 马来西亚-05'
+  - '[机场1] 土耳其-01'
+  - '[机场1] 土耳其-02'
+  - '[机场1] 阿根廷-01'
+  - '[机场1] 阿根廷-02'
+- name: ChatGPT
+  type: select
+  proxies:
+  - '[机场1] 台湾-01'
+  - '[机场1] 台湾-02'
+  - '[机场1] 台湾-03'
+  - '[机场1] 台湾-04'
+  - '[机场1] 台湾-05'
+  - '[机场1] 台湾-06'
+  - '[机场1] 台湾-07'
+  - '[机场1] 台湾-08'
+  - '[机场1] 台湾-09'
+  - '[机场1] 台湾-10'
+  - '[机场1] 新加坡-01'
+  - '[机场1] 新加坡-02'
+  - '[机场1] 新加坡-03'
+  - '[机场1] 新加坡-04'
+  - '[机场1] 新加坡-05'
+  - '[机场1] 新加坡-06'
+  - '[机场1] 新加坡-07'
+  - '[机场1] 新加坡-08'
+  - '[机场1] 新加坡-09'
+  - '[机场1] 新加坡-10'
+  - '[机场1] 美国-01'
+  - '[机场1] 美国-02'
+  - '[机场1] 美国-03'
+  - '[机场1] 美国-04'
+  - '[机场1] 美国-05'
+  - '[机场1] 美国-06'
+  - '[机场1] 美国-07'
+  - '[机场1] 美国-08'
+  - '[机场1] 美国-09'
+  - '[机场1] 美国-10'
+  - '[机场1] 英国-01'
+  - '[机场1] 英国-02'
+  - '[机场1] 英国-03'
+  - '[机场1] 英国-04'
+  - '[机场1] 英国-05'
+- name: Gemini
+  type: select
+  proxies:
+  - '[机场1] 香港-01'
+  - '[机场1] 香港-02'
+  - '[机场1] 香港-03'
+  - '[机场1] 香港-04'
+  - '[机场1] 香港-05'
+  - '[机场1] 香港-06'
+  - '[机场1] 香港-07'
+  - '[机场1] 香港-08'
+  - '[机场1] 香港-09'
+  - '[机场1] 香港-10'
+  - '[机场1] 香港-11'
+  - '[机场1] 香港-12'
+  - '[机场1] 香港-13'
+  - '[机场1] 香港-14'
+  - '[机场1] 香港-15'
+  - '[机场1] 香港-16'
+  - '[机场1] 香港-17'
+  - '[机场1] 香港-18'
+  - '[机场1] 香港-19'
+  - '[机场1] 香港-20'
+  - '[机场1] 台湾-01'
+  - '[机场1] 台湾-02'
+  - '[机场1] 台湾-03'
+  - '[机场1] 台湾-04'
+  - '[机场1] 台湾-05'
+  - '[机场1] 台湾-06'
+  - '[机场1] 台湾-07'
+  - '[机场1] 台湾-08'
+  - '[机场1] 台湾-09'
+  - '[机场1] 台湾-10'
+  - '[机场1] 新加坡-01'
+  - '[机场1] 新加坡-02'
+  - '[机场1] 新加坡-03'
+  - '[机场1] 新加坡-04'
+  - '[机场1] 新加坡-05'
+  - '[机场1] 新加坡-06'
+  - '[机场1] 新加坡-07'
+  - '[机场1] 新加坡-08'
+  - '[机场1] 新加坡-09'
+  - '[机场1] 新加坡-10'
+  - '[机场1] 美国-01'
+  - '[机场1] 美国-02'
+  - '[机场1] 美国-03'
+  - '[机场1] 美国-04'
+  - '[机场1] 美国-05'
+  - '[机场1] 美国-06'
+  - '[机场1] 美国-07'
+  - '[机场1] 美国-08'
+  - '[机场1] 美国-09'
+  - '[机场1] 美国-10'
+  - '[机场1] 英国-01'
+  - '[机场1] 英国-02'
+  - '[机场1] 英国-03'
+  - '[机场1] 英国-04'
+  - '[机场1] 英国-05'
+rules:
+- DOMAIN-SUFFIX,google.com,节点选择
+- DOMAIN-KEYWORD,openai,ChatGPT
+- DOMAIN-KEYWORD,gemini,Gemini
+- MATCH,DIRECT
