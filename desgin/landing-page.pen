@@ -1,0 +1,156 @@
+{
+  "version": "2.6",
+  "children": [
+    {
+      "type": "frame",
+      "id": "bi8Au",
+      "x": 0,
+      "y": 0,
+      "name": "Frame",
+      "clip": true,
+      "width": 800,
+      "height": 600,
+      "fill": "#FFFFFF",
+      "layout": "none"
+    },
+    {
+      "type": "frame",
+      "id": "1eAww",
+      "x": 0,
+      "y": 0,
+      "name": "hero",
+      "width": 1280,
+      "height": 800,
+      "fill": "#0A0A0A",
+      "layout": "vertical",
+      "padding": [
+        0,
+        0,
+        120,
+        0
+      ],
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "rectangle",
+          "id": "BsH92",
+          "name": "overlay",
+          "fill": {
+            "type": "gradient",
+            "gradientType": "linear",
+            "enabled": true,
+            "rotation": 0,
+            "size": {
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "#0A0A0A00",
+                "position": 0
+              },
+              {
+                "color": "#0A0A0ACC",
+                "position": 1
+              }
+            ]
+          },
+          "width": "fill_container",
+          "height": "fill_container"
+        },
+        {
+          "type": "text",
+          "id": "hf39I",
+          "name": "title",
+          "fill": "#FFFFFF",
+          "content": "Hangar",
+          "textAlign": "center",
+          "fontFamily": "Inter",
+          "fontSize": 120,
+          "fontWeight": "800"
+        },
+        {
+          "type": "text",
+          "id": "rjIBA",
+          "name": "subtitle",
+          "fill": "#FF6B35",
+          "content": "下一代智能代理订阅管理中心",
+          "textAlign": "center",
+          "fontFamily": "Inter",
+          "fontSize": 48,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "y8xEN",
+          "name": "desc",
+          "fill": "#888888",
+          "textGrowth": "fixed-width",
+          "width": 600,
+          "content": "为高级技术用户打造。多订阅合并、智能区域识别、AI 驱动配置。",
+          "textAlign": "center",
+          "fontFamily": "Inter",
+          "fontSize": 20,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "yarsS",
+          "name": "btnGroup",
+          "gap": 24,
+          "children": [
+            {
+              "type": "frame",
+              "id": "Y1HSQ",
+              "name": "cta1",
+              "width": 200,
+              "height": 56,
+              "fill": "#FF6B35",
+              "cornerRadius": 28,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "FD1Bk",
+                  "name": "cta1Text",
+                  "fill": "#FFFFFF",
+                  "content": "查看 GitHub",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "TbmMi",
+              "name": "cta2",
+              "width": 200,
+              "height": 56,
+              "cornerRadius": 28,
+              "stroke": {
+                "thickness": 2,
+                "fill": "#FF6B35"
+              },
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "5dAl7",
+                  "name": "cta2Text",
+                  "fill": "#FF6B35",
+                  "content": "立即下载",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

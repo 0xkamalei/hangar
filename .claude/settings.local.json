@@ -27,7 +27,9 @@
       "Bash(pkill:*)",
       "Bash(screencapture:*)",
       "Bash(curl:*)",
-      "Bash(pgrep:*)"
+      "Bash(pgrep:*)",
+      "mcp__chrome-devtools__new_page",
+      "mcp__chrome-devtools__take_screenshot"
     ]
   }
 }

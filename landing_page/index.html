@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hangar - 智能代理订阅管理工具</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body class="overflow-x-hidden">
+    <!-- Hero Section -->
+    <section class="relative h-screen w-full flex items-center justify-center overflow-hidden">
+        <!-- Video Background -->
+        <div class="absolute inset-0 z-0">
+            <video autoplay muted loop playsinline class="w-full h-full object-cover animate-ken-burns opacity-60">
+                <source src="/videos/hero_network.mp4" type="video/mp4">
+            </video>
+            <!-- Overlay Gradient -->
+            <div class="absolute inset-0 bg-hero-gradient opacity-80"></div>
+        </div>
+
+        <!-- Hero Content -->
+        <div class="relative z-10 text-center px-4 max-w-5xl mx-auto animate-fade-in-up">
+            <h1 class="text-7xl md:text-8xl font-bold mb-6 tracking-tight">
+                Hangar
+            </h1>
+            <p class="text-2xl md:text-3xl text-accent-primary font-medium mb-8">
+                下一代智能代理订阅管理中心
+            </p>
+            <p class="text-lg md:text-xl text-neutral-muted max-w-2xl mx-auto mb-12">
+                为高级技术用户打造。多订阅合并、智能区域识别、AI 驱动配置，一切尽在掌握。
+            </p>
+            <div class="flex flex-col sm:flex-row gap-6 justify-center">
+                <a href="https://github.com/0xkamalei/hangar"
+                    class="btn-primary flex items-center justify-center gap-2">
+                    <i data-lucide="github"></i> 查看 GitHub
+                </a>
+                <a href="#" class="btn-outline">
+                    立即下载
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-32 px-4 max-w-7xl mx-auto">
+        <div class="text-center mb-20">
+            <h2 class="text-5xl font-bold mb-6">核心功能</h2>
+            <div class="w-24 h-1 bg-accent-primary mx-auto"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Card 1 -->
+            <div class="feature-card">
+                <div class="text-accent-primary mb-6"><i data-lucide="layers" class="w-10 h-10"></i></div>
+                <h3 class="text-2xl font-bold mb-4">多订阅合并</h3>
+                <p class="text-neutral-muted">一键聚合多个机场订阅，告别频繁切换，统一管理所有节点资源。</p>
+            </div>
+            <!-- Card 2 -->
+            <div class="feature-card">
+                <div class="text-accent-primary mb-6"><i data-lucide="globe" class="w-10 h-10"></i></div>
+                <h3 class="text-2xl font-bold mb-4">智能区域识别</h3>
+                <p class="text-neutral-muted">自动识别节点物理位置，支持中文名、机场别名及多种国际化标识。</p>
+            </div>
+            <!-- Card 3 -->
+            <div class="feature-card">
+                <div class="text-accent-primary mb-6"><i data-lucide="target" class="w-10 h-10"></i></div>
+                <h3 class="text-2xl font-bold mb-4">智能分组</h3>
+                <p class="text-neutral-muted">根据区域及服务类型（ChatGPT/Gemini）自动生成最优代理策略组。</p>
+            </div>
+            <!-- Card 4 -->
+            <div class="feature-card">
+                <div class="text-accent-primary mb-6"><i data-lucide="server" class="w-10 h-10"></i></div>
+                <h3 class="text-2xl font-bold mb-4">内置 HTTP 服务器</h3>
+                <p class="text-neutral-muted">直接向 Clash 客户端提供配置服务，支持热更新，配置变更即时生效。</p>
+            </div>
+            <!-- Card 5 -->
+            <div class="feature-card">
+                <div class="text-accent-primary mb-6"><i data-lucide="history" class="w-10 h-10"></i></div>
+                <h3 class="text-2xl font-bold mb-4">版本管理</h3>
+                <p class="text-neutral-muted">每一次配置变更都有迹可循。支持快照对比与一键回滚到任意历史版本。</p>
+            </div>
+            <!-- Card 6 -->
+            <div class="feature-card relative overflow-hidden">
+                <div class="text-accent-tech mb-6"><i data-lucide="bot" class="w-10 h-10"></i></div>
+                <h3 class="text-2xl font-bold mb-4">AI 驱动配置</h3>
+                <p class="text-neutral-muted">通过自然语言修改规则。只需对 Claude 说出需求，规则即刻生成。</p>
+                <span
+                    class="absolute top-4 right-4 bg-accent-tech/10 text-accent-tech text-xs px-2 py-1 rounded border border-accent-tech/20">即将推出</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tech Stack Section -->
+    <section class="py-32 bg-black/50">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <h2 class="text-4xl font-bold mb-16">前沿技术栈</h2>
+            <div class="flex flex-wrap justify-center gap-4">
+                <span class="tech-tag">React 19</span>
+                <span class="tech-tag">TypeScript</span>
+                <span class="tech-tag">Rust</span>
+                <span class="tech-tag">Tauri 2.0</span>
+                <span class="tech-tag">Vite</span>
+                <span class="tech-tag">Axum</span>
+                <span class="tech-tag">Tailwind CSS</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- How it Works Section -->
+    <section class="py-32 px-4 max-w-5xl mx-auto">
+        <div class="text-center mb-20">
+            <h2 class="text-4xl font-bold mb-4">使用流程</h2>
+            <p class="text-neutral-muted">简单四步，开启高效代理体验</p>
+        </div>
+
+        <div class="space-y-12">
+            <!-- Step 1 -->
+            <div class="flex items-start gap-8">
+                <div class="flex flex-col items-center">
+                    <div class="step-node">1</div>
+                    <div class="w-0.5 h-24 bg-accent-tech/30 mt-2"></div>
+                </div>
+                <div class="pt-2">
+                    <h4 class="text-2xl font-bold mb-2">添加订阅源</h4>
+                    <p class="text-neutral-muted">导入您的一个或多个机场订阅链接，Hangar 将自动处理。 </p>
+                </div>
+            </div>
+            <!-- Step 2 -->
+            <div class="flex items-start gap-8">
+                <div class="flex flex-col items-center">
+                    <div class="step-node">2</div>
+                    <div class="w-0.5 h-24 bg-accent-tech/30 mt-2"></div>
+                </div>
+                <div class="pt-2">
+                    <h4 class="text-2xl font-bold mb-2">自动合并节点</h4>
+                    <p class="text-neutral-muted">系统将从所有来源抓取节点，去重并添加来源标识。</p>
+                </div>
+            </div>
+            <!-- Step 3 -->
+            <div class="flex items-start gap-8">
+                <div class="flex flex-col items-center">
+                    <div class="step-node">3</div>
+                    <div class="w-0.5 h-24 bg-accent-tech/30 mt-2"></div>
+                </div>
+                <div class="pt-2">
+                    <h4 class="text-2xl font-bold mb-2">智能分组配置</h4>
+                    <p class="text-neutral-muted">利用地理位置识别引擎，自动为您生成各地区代理组与分流策略。</p>
+                </div>
+            </div>
+            <!-- Step 4 -->
+            <div class="flex items-start gap-8">
+                <div class="flex flex-col items-center">
+                    <div class="step-node">4</div>
+                </div>
+                <div class="pt-2">
+                    <h4 class="text-2xl font-bold mb-2">一键订阅使用</h4>
+                    <p class="text-neutral-muted">在您的 Clash 客户端填入 Hangar 提供的本地链接即可开始使用。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-20 border-t border-white/5">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-8">
+            <div class="text-center md:text-left">
+                <div class="text-2xl font-bold mb-2">Hangar</div>
+                <p class="text-neutral-muted text-sm">Made with ❤️ by Matrix Agent</p>
+            </div>
+            <div class="flex gap-8 text-neutral-muted hover:text-white transition-colors">
+                <a href="https://github.com/lei/hangar">GitHub</a>
+                <a href="#">Privacy Policy</a>
+                <a href="#">MIT License</a>
+            </div>
+            <div class="text-neutral-muted text-sm">
+                &copy; 2026 Hangar Project.
+            </div>
+        </div>
+    </footer>
+
+    <script type="module" src="./main.js"></script>
+</body>
+
+</html>

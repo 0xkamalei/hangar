@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #0A0A0A;
+  --color-card: #121212;
+  --color-accent-primary: #FF6B35;
+  --color-accent-secondary: #FFA500;
+  --color-accent-tech: #00FF88;
+  --color-neutral-main: #E0E0E0;
+  --color-neutral-muted: #888888;
+
+  --font-sans: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
+
+  --animate-ken-burns: kenburns 20s ease-in-out infinite alternate;
+  --animate-fade-in-up: fadeInUp 1.2s ease-out forwards;
+
+  @keyframes kenburns {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.05); }
+  }
+  @keyframes fadeInUp {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+}
+
+@layer base {
+  body {
+    @apply bg-background text-neutral-main font-sans selection:bg-accent-primary selection:text-white;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-accent-primary hover:bg-accent-secondary text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(255,107,53,0.4)];
+  }
+
+  .btn-outline {
+    @apply border border-accent-primary text-accent-primary hover:bg-accent-primary hover:text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 hover:scale-105;
+  }
+
+  .feature-card {
+    @apply bg-card p-8 rounded-2xl border border-white/5 transition-all duration-500 hover:-translate-y-2 hover:border-accent-primary/30 hover:shadow-[0_0_30px_rgba(255,107,53,0.1)];
+  }
+
+  .tech-tag {
+    @apply px-4 py-2 bg-black border border-accent-primary/20 rounded-lg text-sm font-medium transition-all duration-300 hover:border-accent-primary hover:shadow-[0_0_15px_rgba(255,107,53,0.3)];
+  }
+
+  .step-node {
+    @apply w-12 h-12 rounded-full border-2 border-accent-primary flex items-center justify-center text-accent-primary font-bold text-xl relative z-10 bg-background;
+  }
+}
