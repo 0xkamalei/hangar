@@ -1604,6 +1604,7 @@ dependencies = [
  "http-body-util",
  "json-patch 4.1.0",
  "lazy_static",
+ "libc",
  "notify",
  "reqwest",
  "serde",

@@ -29,6 +29,16 @@ pub fn get_current_config_path() -> Result<PathBuf> {
     Ok(get_hangar_dir()?.join("current.yaml"))
 }
 
+/// Get the path to server.pid
+pub fn get_server_pid_path() -> Result<PathBuf> {
+    Ok(get_hangar_dir()?.join("server.pid"))
+}
+
+/// Get the path to server.log
+pub fn get_server_log_path() -> Result<PathBuf> {
+    Ok(get_hangar_dir()?.join("server.log"))
+}
+
 /// Get the versions directory path
 pub fn get_versions_dir() -> Result<PathBuf> {
     let dir = get_hangar_dir()?.join("versions");

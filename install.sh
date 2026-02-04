@@ -45,7 +45,10 @@ fi
 # Install
 echo -e "${BLUE}Installing to: $INSTALL_DIR/hangar${NC}"
 $SUDO cp "$BINARY_PATH" "$INSTALL_DIR/hangar"
+$SUDO xattr -cr "$INSTALL_DIR/hangar"
+$SUDO codesign -s - --force "$INSTALL_DIR/hangar"
 $SUDO chmod +x "$INSTALL_DIR/hangar"
+
 
 echo ""
 echo -e "${GREEN}✅ Installation complete!${NC}"
@@ -57,5 +60,6 @@ echo "  hangar --help"
 echo ""
 echo "Quick start:"
 echo "  hangar serve --daemon --port 8080"
-echo "  ./hangar-server.sh status"
+echo "  hangar status"
+echo "  hangar logs -f"
 echo ""

@@ -55,7 +55,7 @@ Start the configuration server.
   - Run server in daemon mode (background process)
   - Logs are written to `~/.hangar/server.log`
   - PID is saved to `~/.hangar/server.pid`
-  - Use the `hangar-server.sh` script to manage the daemon
+  - Use `hangar stop`, `hangar status`, etc., to manage the daemon
 
 Example usage:
 ```bash
@@ -65,11 +65,25 @@ hangar serve --port 8080
 # Start server in background (daemon mode)
 hangar serve --daemon --port 8080 --interval 300
 
-# Using the management script
-./hangar-server.sh start    # Start daemon
-./hangar-server.sh status   # Check status
-./hangar-server.sh logs -f  # Follow logs
-./hangar-server.sh stop     # Stop daemon
+### `stop`, `restart`, `status`, `logs`
+Manage the background server.
+- `stop`: Gracefully stops the daemonized server.
+- `restart`: Restarts the daemonized server (using default settings).
+- `status`: Checks if the server is running.
+- `logs [-f]`: Shows server logs (with optional real-time follow).
+
+Example usage:
+```bash
+# Start server in background (daemon mode)
+hangar serve --daemon --port 8080 --interval 300
+# or use the 'start' alias
+hangar start --daemon --port 8080 --interval 300
+
+# Management commands
+hangar status   # Check status
+hangar logs -f  # Follow logs
+hangar restart  # Restart daemon
+hangar stop     # Stop daemon
 ```
 
 ### `ai`

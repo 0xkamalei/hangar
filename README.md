@@ -75,33 +75,33 @@ http://127.0.0.1:8080/config
 
 ## 服务器管理
 
-使用 `hangar-server.sh` 脚本管理后台服务：
+使用 `hangar` 命令直接管理后台服务：
 
 ```bash
 # 启动服务
-./hangar-server.sh start
+hangar serve --daemon
 
 # 查看状态
-./hangar-server.sh status
+hangar status
 
 # 查看日志
-./hangar-server.sh logs
+hangar logs
 
 # 实时跟踪日志
-./hangar-server.sh logs -f
+hangar logs -f
 
 # 停止服务
-./hangar-server.sh stop
+hangar stop
 
 # 重启服务
-./hangar-server.sh restart
+hangar restart
 ```
 
 ### 自定义参数
 
 ```bash
 # 启动时指定端口和自动更新间隔
-./hangar-server.sh start --port 9090 --interval 600
+hangar serve --daemon --port 9090 --interval 600
 ```
 
 ## 命令参考
@@ -126,11 +126,13 @@ hangar sub remove <ID>
 hangar merge
 ```
 
-### 服务器 (`serve`)
+### 服务器 (`serve` / `start`)
 
 ```bash
-# 启动服务器
+# 启动服务器 (serve 和 start 是等价的)
 hangar serve [选项]
+# 或
+hangar start [选项]
 
 选项:
   -p, --port <PORT>          监听端口 [默认: 8080]
@@ -138,6 +140,25 @@ hangar serve [选项]
   -i, --interval <SECONDS>   自动更新间隔（秒），0 表示禁用 [默认: 0]
   -d, --daemon               以 daemon 模式运行
   -h, --help                 显示帮助信息
+```
+
+### 任务管理 (`stop`, `restart`, `status`, `logs`)
+
+```bash
+# 停止后台服务器
+hangar stop
+
+# 重启后台服务器
+hangar restart
+
+# 查看服务器运行状态
+hangar status
+
+# 查看服务器日志
+hangar logs [选项]
+
+选项:
+  -f, --follow               实时跟踪日志
 ```
 
 ### AI 辅助 (`ai`)
@@ -206,7 +227,6 @@ hangar config --model <MODEL>
 ```
 hangar/
 ├── install.sh           # 安装脚本
-├── hangar-server.sh    # 服务器管理脚本
 ├── src-tauri/          # Rust 源代码
 │   ├── src/
 │   │   ├── main.rs     # 入口文件
@@ -256,7 +276,7 @@ hangar sub add "https://example.com/clash" --name "主订阅"
 hangar merge
 
 # 5. 启动 daemon
-./hangar-server.sh start --port 8080 --interval 3600
+hangar serve --daemon --port 8080 --interval 3600
 
 # 6. 设置开机自启动（可选）
 # 创建 systemd service 或使用 cron @reboot
@@ -271,7 +291,7 @@ hangar merge
 lsof -i :8080
 
 # 查看日志
-./hangar-server.sh logs
+hangar logs
 ```
 
 ### 配置未生效
@@ -281,14 +301,14 @@ lsof -i :8080
 hangar merge
 
 # 手动重启服务器
-./hangar-server.sh restart
+hangar restart
 ```
 
 ### 查看详细日志
 
 ```bash
 # 实时查看日志
-./hangar-server.sh logs -f
+hangar logs -f
 
 # 查看完整日志文件
 cat ~/.hangar/server.log

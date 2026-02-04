@@ -21,6 +21,7 @@ enum Commands {
     /// Merge cached subscriptions and local rules into current.yaml
     Merge,
     /// Start the configuration server
+    #[command(alias = "start")]
     Serve {
         /// Port to listen on
         #[arg(short, long, default_value_t = 8080)]
@@ -34,6 +35,18 @@ enum Commands {
         /// Run server in daemon mode (background)
         #[arg(short, long, default_value_t = false)]
         daemon: bool,
+    },
+    /// Stop the background server
+    Stop,
+    /// Restart the background server
+    Restart,
+    /// Check server status
+    Status,
+    /// Show server logs
+    Logs {
+        /// Follow logs in real-time
+        #[arg(short, long, default_value_t = false)]
+        follow: bool,
     },
     /// AI-powered configuration modification
     Ai {
@@ -349,6 +362,19 @@ async fn main() -> anyhow::Result<()> {
         } => {
             // Handle daemon mode
             if daemon {
+                let pid_path = storage::get_server_pid_path()?;
+                if pid_path.exists() {
+                    let pid_str = std::fs::read_to_string(&pid_path)?;
+                    if let Ok(pid) = pid_str.trim().parse::<i32>() {
+                        // Check if process exists (cross-platform is hard, but simple check for unix)
+                        #[cfg(unix)]
+                        if unsafe { libc::kill(pid, 0) == 0 } {
+                            println!("❌ Server is already running with PID: {}", pid);
+                            return Ok(());
+                        }
+                    }
+                }
+
                 println!("🔄 Starting server in daemon mode...");
 
                 // Get the current executable path
@@ -359,7 +385,7 @@ async fn main() -> anyhow::Result<()> {
                 args.retain(|arg| arg != "--daemon" && arg != "-d");
 
                 // Get the log file path
-                let log_path = storage::get_hangar_dir()?.join("server.log");
+                let log_path = storage::get_server_log_path()?;
                 println!("📝 Logs will be written to: {:?}", log_path);
 
                 // Spawn the process in the background
@@ -383,10 +409,9 @@ async fn main() -> anyhow::Result<()> {
                 println!("✅ Server started in background with PID: {}", child.id());
                 println!("   Address: http://{}:{}/config", host, port);
                 println!("   Log file: {:?}", log_path);
-                println!("\nTo stop the server, run: kill {}", child.id());
+                println!("\nTo stop the server, run: hangar stop");
 
                 // Save PID to file for easy management
-                let pid_path = storage::get_hangar_dir()?.join("server.pid");
                 std::fs::write(&pid_path, child.id().to_string())?;
                 println!("   PID file: {:?}", pid_path);
 
@@ -548,6 +573,126 @@ async fn main() -> anyhow::Result<()> {
                     eprintln!("🛑 Shutting down server...");
                 })
                 .await?;
+        }
+        Commands::Stop => {
+            let pid_path = storage::get_server_pid_path()?;
+            if !pid_path.exists() {
+                println!("❌ Server is not running (no PID file found)");
+                return Ok(());
+            }
+
+            let pid_str = std::fs::read_to_string(&pid_path)?;
+            let pid = pid_str
+                .trim()
+                .parse::<i32>()
+                .context("Failed to parse PID")?;
+
+            println!("🛑 Stopping server (PID: {})...", pid);
+
+            #[cfg(unix)]
+            {
+                use std::time::{Duration, Instant};
+                let res = unsafe { libc::kill(pid, 15) }; // SIGTERM
+                if res == 0 {
+                    // Wait for it to stop
+                    let start = Instant::now();
+                    while start.elapsed() < Duration::from_secs(5) {
+                        if unsafe { libc::kill(pid, 0) } != 0 {
+                            break;
+                        }
+                        tokio::time::sleep(Duration::from_millis(200)).await;
+                    }
+
+                    if unsafe { libc::kill(pid, 0) } == 0 {
+                        println!("⚠️ Server didn't stop gracefully, force killing...");
+                        unsafe { libc::kill(pid, 9) }; // SIGKILL
+                    }
+
+                    let _ = std::fs::remove_file(&pid_path);
+                    println!("✅ Server stopped");
+                } else {
+                    println!("❌ Failed to stop server: process not found or no permission");
+                    let _ = std::fs::remove_file(&pid_path);
+                }
+            }
+
+            #[cfg(not(unix))]
+            {
+                println!("❌ Stop command is currently only supported on Unix-like systems.");
+            }
+        }
+        Commands::Restart => {
+            // Stop
+            let pid_path = storage::get_server_pid_path()?;
+            if pid_path.exists() {
+                let pid_str = std::fs::read_to_string(&pid_path)?;
+                if let Ok(pid) = pid_str.trim().parse::<i32>() {
+                    println!("🛑 Stopping server (PID: {})...", pid);
+                    #[cfg(unix)]
+                    {
+                        unsafe { libc::kill(pid, 15) };
+                        tokio::time::sleep(std::time::Duration::from_secs(1)).await;
+                    }
+                }
+                let _ = std::fs::remove_file(&pid_path);
+            }
+
+            // Start - we need to know the default port/host or previous ones?
+            // For simplicity, we just run 'serve --daemon' with defaults or we could try to persist last used args.
+            // But usually defaults are fine or user can just run start again.
+            // Let's just trigger the same logic as Serve but with default args.
+            println!("🚀 Restarting server...");
+            let exe = std::env::current_exe()?;
+            std::process::Command::new(&exe)
+                .arg("serve")
+                .arg("--daemon")
+                .spawn()?;
+            println!("✅ Restart initiated.");
+        }
+        Commands::Status => {
+            let pid_path = storage::get_server_pid_path()?;
+            let log_path = storage::get_server_log_path()?;
+
+            if !pid_path.exists() {
+                println!("❌ Server is not running");
+                return Ok(());
+            }
+
+            let pid_str = std::fs::read_to_string(&pid_path)?;
+            if let Ok(pid) = pid_str.trim().parse::<i32>() {
+                #[cfg(unix)]
+                if unsafe { libc::kill(pid, 0) } == 0 {
+                    println!("✅ Server is running (PID: {})", pid);
+                    println!("   Log file: {:?}", log_path);
+                    return Ok(());
+                }
+                println!("❌ Server is not running (stale PID file)");
+                let _ = std::fs::remove_file(&pid_path);
+            } else {
+                println!("❌ Invalid PID file content");
+            }
+        }
+        Commands::Logs { follow } => {
+            let log_path = storage::get_server_log_path()?;
+            if !log_path.exists() {
+                println!("❌ Log file not found: {:?}", log_path);
+                return Ok(());
+            }
+
+            if follow {
+                let mut child = std::process::Command::new("tail")
+                    .arg("-f")
+                    .arg(&log_path)
+                    .spawn()?;
+                child.wait()?;
+            } else {
+                let output = std::process::Command::new("tail")
+                    .arg("-n")
+                    .arg("50")
+                    .arg(&log_path)
+                    .output()?;
+                println!("{}", String::from_utf8_lossy(&output.stdout));
+            }
         }
         Commands::Ai { prompt } => {
             println!("🤖 Processing AI request: \"{}\"", prompt);
