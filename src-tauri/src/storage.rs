@@ -118,9 +118,28 @@ pub fn ensure_basic_config_exists() -> Result<()> {
     Ok(())
 }
 
-/// Get path to groups.yml
-pub fn get_groups_config_path() -> Result<PathBuf> {
+/// Get path to bundled groups.yml (in resources)
+pub fn get_default_groups_config_path() -> Result<PathBuf> {
     Ok(get_resources_dir()?.join("groups.yml"))
+}
+
+/// Get path to groups.yml (in .hangar directory - User/AI editable)
+pub fn get_groups_config_path() -> Result<PathBuf> {
+    Ok(get_hangar_dir()?.join("groups.yml"))
+}
+
+/// Ensure groups.yml exists in .hangar directory, copying from default if needed
+pub fn ensure_groups_config_exists() -> Result<()> {
+    let target_path = get_groups_config_path()?;
+    if !target_path.exists() {
+        let default_path = get_default_groups_config_path()?;
+        if default_path.exists() {
+            fs::copy(default_path, target_path)
+                .context("Failed to copy default groups.yml to .hangar")?;
+        }
+        // If groups.yml doesn't exist, we don't strictly need it, so we can ignore if default is missing.
+    }
+    Ok(())
 }
 
 /// Save proxies to cache for a subscription (Raw YAML)

@@ -125,6 +125,7 @@ enum HistoryCommands {
 async fn main() -> anyhow::Result<()> {
     // Ensure basic config exists in user directory
     storage::ensure_basic_config_exists()?;
+    storage::ensure_groups_config_exists()?;
 
     let cli = Cli::parse();
 
