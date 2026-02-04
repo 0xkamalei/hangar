@@ -1,7 +1,7 @@
+use crate::types::{HangarConfig, Subscription, SubscriptionList};
 use anyhow::{Context, Result};
-use std::path::PathBuf;
 use std::fs;
-use crate::types::{HangarConfig, SubscriptionList, Subscription};
+use std::path::PathBuf;
 
 /// Get the Hangar data directory path (~/.hangar/)
 pub fn get_hangar_dir() -> Result<PathBuf> {
@@ -9,8 +9,7 @@ pub fn get_hangar_dir() -> Result<PathBuf> {
     let hangar_dir = home.join(".hangar");
 
     // Ensure directory exists
-    fs::create_dir_all(&hangar_dir)
-        .context("Failed to create .hangar directory")?;
+    fs::create_dir_all(&hangar_dir).context("Failed to create .hangar directory")?;
 
     Ok(hangar_dir)
 }
@@ -33,32 +32,89 @@ pub fn get_current_config_path() -> Result<PathBuf> {
 /// Get the versions directory path
 pub fn get_versions_dir() -> Result<PathBuf> {
     let dir = get_hangar_dir()?.join("versions");
-    fs::create_dir_all(&dir)
-        .context("Failed to create versions directory")?;
+    fs::create_dir_all(&dir).context("Failed to create versions directory")?;
     Ok(dir)
 }
 
 /// Get the cache directory path
 pub fn get_cache_dir() -> Result<PathBuf> {
     let dir = get_hangar_dir()?.join("cache");
-    fs::create_dir_all(&dir)
-        .context("Failed to create cache directory")?;
+    fs::create_dir_all(&dir).context("Failed to create cache directory")?;
     Ok(dir)
 }
 
 /// Get the proxies cache directory
 pub fn get_proxies_cache_dir() -> Result<PathBuf> {
     let dir = get_cache_dir()?.join("proxies");
-    fs::create_dir_all(&dir)
-        .context("Failed to create proxies cache directory")?;
+    fs::create_dir_all(&dir).context("Failed to create proxies cache directory")?;
     Ok(dir)
+}
+
+/// Get the path to a subscription's proxy cache file
+pub fn get_subscription_cache_path(subscription_id: &str) -> Result<PathBuf> {
+    Ok(get_proxies_cache_dir()?.join(format!("{}.yaml", subscription_id)))
+}
+
+/// Get the resources directory path (src-tauri/resources)
+/// In a real Taur app this might be different, but for CLI we assume relative to project or explicit path
+pub fn get_resources_dir() -> Result<PathBuf> {
+    // For development/CLI, we assume we are running from project root or similar.
+    // We try to find src-tauri/resources
+
+    let mut curr = std::env::current_dir()?;
+    // simple heuristic: look for src-tauri/resources in current or parents (up to 3 levels)
+    for _ in 0..3 {
+        let candidate = curr.join("src-tauri").join("resources");
+        if candidate.exists() {
+            return Ok(candidate);
+        }
+        if let Some(parent) = curr.parent() {
+            curr = parent.to_path_buf();
+        } else {
+            break;
+        }
+    }
+
+    // Fallback: assume running from within src-tauri or similar
+    Ok(PathBuf::from("resources"))
+}
+
+/// Get path to basic.yml
+pub fn get_basic_config_path() -> Result<PathBuf> {
+    Ok(get_resources_dir()?.join("basic.yml"))
+}
+
+/// Get path to groups.yml
+pub fn get_groups_config_path() -> Result<PathBuf> {
+    Ok(get_resources_dir()?.join("groups.yml"))
+}
+
+/// Save proxies to cache for a subscription (Raw YAML)
+pub fn save_proxies_cache(subscription_id: &str, content: &str) -> Result<PathBuf> {
+    let cache_path = get_subscription_cache_path(subscription_id)?;
+    fs::write(&cache_path, content).context("Failed to write proxies cache file")?;
+    Ok(cache_path)
+}
+
+/// Load proxies from cache for a subscription
+pub fn load_proxies_cache(subscription_id: &str) -> Result<Vec<crate::types::ProxyNode>> {
+    let cache_path = get_subscription_cache_path(subscription_id)?;
+
+    if !cache_path.exists() {
+        return Ok(vec![]);
+    }
+
+    let content = fs::read_to_string(cache_path).context("Failed to read proxies cache file")?;
+    let proxies: Vec<crate::types::ProxyNode> =
+        serde_json::from_str(&content).context("Failed to parse proxies cache file")?;
+
+    Ok(proxies)
 }
 
 /// Get the rules cache directory
 pub fn get_rules_cache_dir() -> Result<PathBuf> {
     let dir = get_cache_dir()?.join("rules");
-    fs::create_dir_all(&dir)
-        .context("Failed to create rules cache directory")?;
+    fs::create_dir_all(&dir).context("Failed to create rules cache directory")?;
     Ok(dir)
 }
 
@@ -73,10 +129,9 @@ pub fn load_hangar_config() -> Result<HangarConfig> {
         return Ok(default_config);
     }
 
-    let content = fs::read_to_string(&config_path)
-        .context("Failed to read config.json")?;
-    let config: HangarConfig = serde_json::from_str(&content)
-        .context("Failed to parse config.json")?;
+    let content = fs::read_to_string(&config_path).context("Failed to read config.json")?;
+    let config: HangarConfig =
+        serde_json::from_str(&content).context("Failed to parse config.json")?;
 
     Ok(config)
 }
@@ -84,10 +139,8 @@ pub fn load_hangar_config() -> Result<HangarConfig> {
 /// Save Hangar configuration
 pub fn save_hangar_config(config: &HangarConfig) -> Result<()> {
     let config_path = get_config_path()?;
-    let content = serde_json::to_string_pretty(config)
-        .context("Failed to serialize config")?;
-    fs::write(&config_path, content)
-        .context("Failed to write config.json")?;
+    let content = serde_json::to_string_pretty(config).context("Failed to serialize config")?;
+    fs::write(&config_path, content).context("Failed to write config.json")?;
     Ok(())
 }
 
@@ -104,10 +157,9 @@ pub fn load_subscriptions() -> Result<Vec<Subscription>> {
         return Ok(default_list.subscriptions);
     }
 
-    let content = fs::read_to_string(&subs_path)
-        .context("Failed to read subscriptions.json")?;
-    let list: SubscriptionList = serde_json::from_str(&content)
-        .context("Failed to parse subscriptions.json")?;
+    let content = fs::read_to_string(&subs_path).context("Failed to read subscriptions.json")?;
+    let list: SubscriptionList =
+        serde_json::from_str(&content).context("Failed to parse subscriptions.json")?;
 
     Ok(list.subscriptions)
 }
@@ -118,9 +170,8 @@ pub fn save_subscriptions(subscriptions: &[Subscription]) -> Result<()> {
     let list = SubscriptionList {
         subscriptions: subscriptions.to_vec(),
     };
-    let content = serde_json::to_string_pretty(&list)
-        .context("Failed to serialize subscriptions")?;
-    fs::write(&subs_path, content)
-        .context("Failed to write subscriptions.json")?;
+    let content =
+        serde_json::to_string_pretty(&list).context("Failed to serialize subscriptions")?;
+    fs::write(&subs_path, content).context("Failed to write subscriptions.json")?;
     Ok(())
 }

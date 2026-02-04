@@ -58,20 +58,21 @@ cargo test --manifest-path src-tauri/Cargo.toml
 cargo clippy --manifest-path src-tauri/Cargo.toml
 ```
 
-### CLI Tool (Command-line testing)
+### CLI Tool
 
-The project includes a standalone CLI tool for testing subscription merging without the UI:
+The `hangar` binary itself serves as a full-featured CLI tool for managing subscriptions, configurations, and the server without the UI.
 
 ```bash
-# Run CLI tool with subscription file
-cargo run --bin cli --manifest-path src-tauri/Cargo.toml -- subs.txt [output.yml]
+# Run CLI commands via Cargo
+cargo run --manifest-path src-tauri/Cargo.toml -- sub list
+cargo run --manifest-path src-tauri/Cargo.toml -- update
 
-# Build standalone CLI binary
-cargo build --bin cli --manifest-path src-tauri/Cargo.toml --release
-# Binary location: src-tauri/target/release/cli
+# Build standalone CLI binary (same as app binary)
+cargo build --manifest-path src-tauri/Cargo.toml --release
+# Binary location: src-tauri/target/release/hangar
 ```
 
-The CLI tool reads a text file with subscription URLs (one per line, # for comments) and generates a merged Clash configuration file.
+Available command groups: `sub` (manage subscriptions), `update` (merge config), `serve` (start server), `ai` (LLM modification), `history` (versioning), and `config` (settings).
 
 ## Architecture
 

@@ -1,0 +1,91 @@
+- name: 节点选择
+  type: select
+
+- name: 自动选择
+  type: url-test
+  url: 'http://www.gstatic.com/generate_204'
+  interval: 300
+
+- name: 微软服务
+  type: select
+  proxies:
+    - DIRECT
+    - 节点选择
+
+- name: 苹果服务
+  type: select
+  proxies:
+    - DIRECT
+    - 节点选择
+
+- name: 谷歌服务
+  type: select
+  proxies:
+    - DIRECT
+    - 节点选择
+
+- name: 哔哩哔哩
+  type: select
+  proxies:
+    - DIRECT
+    - 节点选择
+
+- name: 抖音
+  type: select
+  proxies:
+    - DIRECT
+    - 节点选择
+
+- name: 磁力下载
+  type: select
+  proxies:
+    - DIRECT
+    - 节点选择
+
+- name: ChatGPT
+  type: select
+  proxies:
+    - DIRECT
+    - 节点选择
+
+- name: Copilot
+  type: select
+  proxies:
+    - DIRECT
+    - 节点选择
+
+- name: Netflix
+  type: select
+  proxies:
+    - DIRECT
+    - 节点选择
+
+- name: Steam
+  type: select
+  proxies:
+    - DIRECT
+    - 节点选择
+
+- name: Telegram
+  type: select
+  proxies:
+    - DIRECT
+    - 节点选择
+
+- name: TikTok
+  type: select
+  proxies:
+    - DIRECT
+    - 节点选择
+
+- name: Twitter
+  type: select
+  proxies:
+    - DIRECT
+    - 节点选择
+
+- name: WhatsApp
+  type: select
+  proxies:
+    - DIRECT
+    - 节点选择

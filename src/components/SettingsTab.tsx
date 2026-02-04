@@ -3,7 +3,8 @@ import { useTranslation } from "react-i18next";
 import { invoke } from "@tauri-apps/api/core";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Cpu, Server, ClipboardList, Sliders, Eye, EyeOff, Save, Loader2, RefreshCw, Plus, ChevronDown, FolderOpen, Zap, Trash2 } from "lucide-react";
+import { Cpu, Server, ClipboardList, Sliders, Eye, EyeOff, Save, Loader2, RefreshCw, Plus, ChevronDown, FolderOpen, Zap, Trash2, Sun, Moon, Monitor } from "lucide-react";
+import { useTheme } from "./ThemeProvider";
 
 interface LlmConfig {
   base_url: string;
@@ -24,6 +25,7 @@ interface HangarConfig {
 
 export default function SettingsTab() {
   const { t, i18n } = useTranslation();
+  const { theme, setTheme } = useTheme();
   const [llmConfig, setLlmConfig] = useState({
     baseUrl: "https://api.openai.com/v1",
     apiKey: "",
@@ -126,6 +128,27 @@ export default function SettingsTab() {
   const handleRemoveRuleSource = (index: number) => {
     setRuleSources(ruleSources.filter((_, i) => i !== index));
   };
+
+  async function openDataDirectory() {
+    try {
+      await invoke("open_data_directory");
+    } catch (error) {
+      setMessage({ type: "error", text: `Failed to open data directory: ${error}` });
+    }
+  }
+
+  async function handleRefreshRules() {
+    setIsLoading(true);
+    setMessage(null);
+    try {
+      const result = await invoke<string>("refresh_rules");
+      setMessage({ type: "success", text: result });
+    } catch (error) {
+      setMessage({ type: "error", text: String(error) });
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   return (
     <div className="flex flex-col min-h-full">
@@ -272,8 +295,8 @@ export default function SettingsTab() {
                 <ClipboardList className="text-primary" size={20} />
                 <h3 className="text-lg font-bold">Rule Sources</h3>
               </div>
-              <Button variant="outline" size="sm" className="font-bold gap-2">
-                <RefreshCw size={14} />
+              <Button variant="outline" size="sm" className="font-bold gap-2" onClick={handleRefreshRules} disabled={isLoading}>
+                <RefreshCw size={14} className={isLoading ? "animate-spin" : ""} />
                 Refresh All
               </Button>
             </div>
@@ -326,6 +349,35 @@ export default function SettingsTab() {
             <div className="bg-card dark:bg-surface-dark border border-border rounded-xl p-6 space-y-8 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>
+                  <p className="text-sm font-bold text-foreground">Interface Appearance</p>
+                  <p className="text-xs text-muted-foreground">Choose your preferred theme</p>
+                </div>
+                <div className="flex p-1 bg-muted rounded-lg">
+                  <button
+                    className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all flex items-center gap-2 ${theme === 'light' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+                    onClick={() => setTheme('light')}
+                  >
+                    <Sun size={14} />
+                    Light
+                  </button>
+                  <button
+                    className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all flex items-center gap-2 ${theme === 'dark' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+                    onClick={() => setTheme('dark')}
+                  >
+                    <Moon size={14} />
+                    Dark
+                  </button>
+                  <button
+                    className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all flex items-center gap-2 ${theme === 'system' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+                    onClick={() => setTheme('system')}
+                  >
+                    <Monitor size={14} />
+                    System
+                  </button>
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <div>
                   <p className="text-sm font-bold text-foreground">Interface Language</p>
                   <p className="text-xs text-muted-foreground">Switch between English and Chinese</p>
                 </div>
@@ -355,7 +407,7 @@ export default function SettingsTab() {
                     readOnly
                     value="~/.hangar/"
                   />
-                  <Button variant="outline" className="h-11 px-4 font-bold gap-2">
+                  <Button variant="outline" className="h-11 px-4 font-bold gap-2" onClick={openDataDirectory}>
                     <FolderOpen size={18} />
                     Browse
                   </Button>

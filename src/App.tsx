@@ -57,18 +57,6 @@ function App() {
               );
             })}
           </nav>
-
-          <div className="mt-auto pt-6 border-t border-border">
-            <div className="flex items-center gap-3 px-2">
-              <div className="bg-primary/20 aspect-square rounded-full size-10 border-2 border-primary/30 flex items-center justify-center">
-                <span className="text-primary font-bold text-xs">User</span>
-              </div>
-              <div className="flex flex-col">
-                <p className="text-foreground text-sm font-medium">Alex Chen</p>
-                <p className="text-muted-foreground text-xs">Pro Plan</p>
-              </div>
-            </div>
-          </div>
         </div>
       </aside>
 

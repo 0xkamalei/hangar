@@ -123,3 +123,13 @@ pub struct ConfigVersion {
     pub description: String,
     pub file_path: String,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Notification {
+    pub id: String,
+    pub title: String,
+    pub message: String,
+    pub timestamp: i64,
+    pub is_read: bool,
+    pub severity: String, // "info", "warning", "error"
+}

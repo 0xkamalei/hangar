@@ -1,8 +1,40 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { invoke } from "@tauri-apps/api/core";
+import { open } from "@tauri-apps/plugin-dialog";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Zap, StopCircle, FileEdit, Copy, FileText, Clock, History, PlusCircle, Mic, Paperclip, Network } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogBody,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
+import {
+  Sparkles,
+  Zap,
+  StopCircle,
+  FileEdit,
+  Copy,
+  FileText,
+  Clock,
+  History,
+  PlusCircle,
+  Mic,
+  MicOff,
+  Paperclip,
+  Network,
+  PanelRightOpen,
+  PanelRightClose,
+  Trash2,
+  RotateCcw,
+  X,
+  File,
+  AlertCircle,
+} from "lucide-react";
 
 interface AiPatchResult {
   description: string;
@@ -16,6 +48,21 @@ interface ConfigVersion {
   file_path: string;
 }
 
+interface Subscription {
+  id: string;
+  name: string;
+  url: string;
+  enabled: boolean;
+  last_updated: string | null;
+  node_count: number | null;
+}
+
+interface AttachedFile {
+  name: string;
+  path: string;
+  content: string;
+}
+
 export default function MainTab() {
   const { t: _t } = useTranslation();
   const [isRunning, setIsRunning] = useState(false);
@@ -25,12 +72,65 @@ export default function MainTab() {
   const [aiResult, setAiResult] = useState<AiPatchResult | null>(null);
   const [serverMessage, setServerMessage] = useState("");
   const [versions, setVersions] = useState<ConfigVersion[]>([]);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [totalProxies, setTotalProxies] = useState<number | "N/A">("N/A");
+  const [lastSync, setLastSync] = useState<string>("N/A");
+  const [activeProfile, setActiveProfile] = useState<string>("N/A");
   const port = 8080;
+
+  // New states for advanced features
+  const [allSnapshotsModal, setAllSnapshotsModal] = useState(false);
+  const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([]);
+  const [isRecording, setIsRecording] = useState(false);
+  const [speechSupported, setSpeechSupported] = useState(false);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
 
   useEffect(() => {
     checkServerStatus();
     loadVersions();
+    loadSummaryData();
+    checkSpeechSupport();
   }, []);
+
+  function checkSpeechSupport() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    setSpeechSupported(!!SpeechRecognition);
+  }
+
+  async function loadSummaryData() {
+    try {
+      const subs = await invoke<Subscription[]>("get_subscriptions");
+      const count = subs.reduce((acc, sub) => acc + (sub.node_count || 0), 0);
+      setTotalProxies(count || "N/A");
+
+      const latest = subs
+        .filter(s => s.last_updated)
+        .sort((a, b) => new Date(b.last_updated!).getTime() - new Date(a.last_updated!).getTime())[0];
+
+      if (latest && latest.last_updated) {
+        setLastSync(formatRelativeTime(latest.last_updated));
+      } else {
+        setLastSync("N/A");
+      }
+    } catch (error) {
+      console.error("Failed to load summary data:", error);
+    }
+  }
+
+  function formatRelativeTime(dateStr: string) {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+    if (diffInSeconds < 60) return "just now";
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+    return date.toLocaleDateString();
+  }
+
+  function formatTimestamp(ts: number) {
+    return new Date(ts * 1000).toLocaleString();
+  }
 
   async function checkServerStatus() {
     try {
@@ -45,6 +145,9 @@ export default function MainTab() {
     try {
       const vers = await invoke<ConfigVersion[]>("list_versions");
       setVersions(vers);
+      if (vers.length > 0) {
+        setActiveProfile(vers[0].description || "current.yaml");
+      }
     } catch (error) {
       console.error("Failed to load versions:", error);
     }
@@ -79,7 +182,7 @@ export default function MainTab() {
   function copySubscriptionUrl() {
     const url = `http://127.0.0.1:${port}/config`;
     navigator.clipboard.writeText(url);
-    setServerMessage("✅ 链接已复制到剪贴板");
+    setServerMessage("Link copied to clipboard");
     setTimeout(() => setServerMessage(""), 2000);
   }
 
@@ -88,11 +191,20 @@ export default function MainTab() {
     setAiLoading(true);
     setAiResult(null);
     try {
-      const result = await invoke<AiPatchResult>("generate_ai_patch", { prompt: aiPrompt });
+      // Build context with attached files
+      let fullPrompt = aiPrompt;
+      if (attachedFiles.length > 0) {
+        const filesContext = attachedFiles
+          .map(f => `--- ${f.name} ---\n${f.content}`)
+          .join("\n\n");
+        fullPrompt = `${aiPrompt}\n\nAttached files for context:\n${filesContext}`;
+      }
+
+      const result = await invoke<AiPatchResult>("generate_ai_patch", { prompt: fullPrompt });
       setAiResult(result);
-      setServerMessage(`✅ AI 生成成功: ${result.description}`);
+      setServerMessage(`AI generation successful: ${result.description}`);
     } catch (error) {
-      setServerMessage(`❌ AI 生成失败: ${error}`);
+      setServerMessage(`AI generation failed: ${error}`);
     } finally {
       setAiLoading(false);
     }
@@ -101,34 +213,160 @@ export default function MainTab() {
   async function handleRollback(id: string) {
     try {
       await invoke<string>("rollback_version", { id });
-      setServerMessage("✅ 已回退到指定版本");
+      setServerMessage("Rolled back to selected version");
       loadVersions();
     } catch (error) {
-      setServerMessage(`❌ 回退失败: ${error}`);
+      setServerMessage(`Rollback failed: ${error}`);
     }
   }
 
   async function handleDeleteVersion(id: string) {
-    if (!confirm("确定要删除这个版本吗？")) return;
+    if (!confirm("Delete this snapshot?")) return;
     try {
       await invoke<string>("delete_version", { id });
       loadVersions();
     } catch (error) {
-      setServerMessage(`❌ 删除失败: ${error}`);
+      setServerMessage(`Delete failed: ${error}`);
     }
   }
 
-  function formatTimestamp(ts: number) {
-    return new Date(ts * 1000).toLocaleString();
+  async function handleApplyAiPatch() {
+    if (!aiResult) return;
+    setIsLoading(true);
+    try {
+      const result = await invoke<string>("apply_ai_patch", { operations: aiResult.operations });
+      setServerMessage(result);
+      setAiResult(null);
+      setAiPrompt("");
+      setAttachedFiles([]);
+      loadVersions();
+    } catch (error) {
+      setServerMessage(`Apply failed: ${error}`);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function handleCreateSnapshot() {
+    const desc = prompt("Enter a description for this snapshot:");
+    if (desc === null) return;
+
+    setIsLoading(true);
+    try {
+      await invoke("create_manual_snapshot", { description: desc || "Manual Snapshot" });
+      setServerMessage("Snapshot created successfully");
+      loadVersions();
+    } catch (error) {
+      setServerMessage(`Snapshot creation failed: ${error}`);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function openInEditor() {
+    try {
+      await invoke("open_config_in_editor");
+    } catch (error) {
+      setServerMessage(`Cannot open editor: ${error}`);
+    }
+  }
+
+  // Attach file handler
+  async function handleAttachFile() {
+    try {
+      const filePath = await open({
+        filters: [
+          { name: "Config Files", extensions: ["yaml", "yml", "json", "txt"] },
+        ],
+        multiple: false,
+      });
+
+      if (filePath && typeof filePath === "string") {
+        // Read file content (we'll need to add this command to backend)
+        const content = await invoke<string>("read_file_content", { path: filePath });
+        const fileName = filePath.split("/").pop() || filePath;
+
+        setAttachedFiles(prev => [...prev, { name: fileName, path: filePath, content }]);
+        setServerMessage(`Attached: ${fileName}`);
+      }
+    } catch (error) {
+      // If read_file_content doesn't exist, just attach without content
+      console.error("Could not read file:", error);
+      setServerMessage(`File attachment failed: ${error}`);
+    }
+  }
+
+  function removeAttachedFile(index: number) {
+    setAttachedFiles(prev => prev.filter((_, i) => i !== index));
+  }
+
+  // Voice input handlers
+  function toggleVoiceInput() {
+    if (!speechSupported) {
+      setServerMessage("Speech recognition not supported in this browser");
+      return;
+    }
+
+    if (isRecording) {
+      stopRecording();
+    } else {
+      startRecording();
+    }
+  }
+
+  function startRecording() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) return;
+
+    const recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = "en-US";
+
+    recognition.onresult = (event) => {
+      let transcript = "";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript;
+      }
+      setAiPrompt(prev => {
+        // Replace interim results or append final
+        if (event.results[event.results.length - 1].isFinal) {
+          return prev + transcript + " ";
+        }
+        return prev;
+      });
+    };
+
+    recognition.onerror = (event) => {
+      console.error("Speech recognition error:", event.error);
+      setIsRecording(false);
+      setServerMessage(`Voice input error: ${event.error}`);
+    };
+
+    recognition.onend = () => {
+      setIsRecording(false);
+    };
+
+    recognitionRef.current = recognition;
+    recognition.start();
+    setIsRecording(true);
+  }
+
+  function stopRecording() {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      recognitionRef.current = null;
+    }
+    setIsRecording(false);
   }
 
   return (
-    <div className="flex h-full">
+    <div className="flex h-full relative">
       {/* Dashboard Main Content */}
       <div className="flex-1 flex flex-col overflow-y-auto">
         {/* AI Composer Header */}
         <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-md px-8 py-6">
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-4xl mx-auto flex gap-4">
             <div className="flex flex-col w-full rounded-xl overflow-hidden shadow-2xl shadow-primary/5 border border-border bg-card dark:bg-surface-dark">
               <div className="flex flex-1 items-stretch">
                 <div className="flex justify-center items-start pt-[18px] px-4 border-r border-border">
@@ -143,13 +381,47 @@ export default function MainTab() {
                   onChange={(e) => setAiPrompt(e.target.value)}
                 />
               </div>
+
+              {/* Attached Files Display */}
+              {attachedFiles.length > 0 && (
+                <div className="px-4 pb-2 flex flex-wrap gap-2">
+                  {attachedFiles.map((file, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center gap-2 px-3 py-1.5 bg-muted rounded-lg text-xs"
+                    >
+                      <File size={14} className="text-primary" />
+                      <span className="text-foreground font-medium">{file.name}</span>
+                      <button
+                        onClick={() => removeAttachedFile(index)}
+                        className="text-muted-foreground hover:text-foreground"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
               <div className="flex justify-end p-4 pt-0">
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-1">
-                    <button className="p-2 text-muted-foreground hover:text-primary transition-colors">
-                      <Mic size={20} />
+                    <button
+                      className={`p-2 transition-colors ${
+                        isRecording
+                          ? "text-red-500 animate-pulse"
+                          : "text-muted-foreground hover:text-primary"
+                      }`}
+                      onClick={toggleVoiceInput}
+                      title={speechSupported ? "Voice input" : "Speech not supported"}
+                    >
+                      {isRecording ? <MicOff size={20} /> : <Mic size={20} />}
                     </button>
-                    <button className="p-2 text-muted-foreground hover:text-primary transition-colors">
+                    <button
+                      className="p-2 text-muted-foreground hover:text-primary transition-colors"
+                      onClick={handleAttachFile}
+                      title="Attach file for context"
+                    >
                       <Paperclip size={20} />
                     </button>
                   </div>
@@ -165,6 +437,15 @@ export default function MainTab() {
                 </div>
               </div>
             </div>
+
+            <Button
+              variant="outline"
+              size="icon"
+              className="mt-2 shrink-0 border-border"
+              onClick={() => setIsHistoryOpen(!isHistoryOpen)}
+            >
+              {isHistoryOpen ? <PanelRightClose size={20} /> : <PanelRightOpen size={20} />}
+            </Button>
           </div>
         </header>
 
@@ -182,8 +463,10 @@ export default function MainTab() {
                   {JSON.stringify(aiResult.operations, null, 2)}
                 </pre>
                 <div className="flex gap-3">
-                  <Button size="sm">Apply Changes</Button>
-                  <Button size="sm" variant="outline" onClick={() => setAiResult(null)}>
+                  <Button size="sm" onClick={handleApplyAiPatch} disabled={isLoading}>
+                    Apply Changes
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={() => setAiResult(null)} disabled={isLoading}>
                     Discard
                   </Button>
                 </div>
@@ -231,6 +514,7 @@ export default function MainTab() {
                       <Button
                         variant="outline"
                         className="h-10 px-5 border-border text-foreground hover:bg-muted font-bold gap-2"
+                        onClick={openInEditor}
                       >
                         <FileEdit size={20} />
                         <span>Open in Editor</span>
@@ -244,13 +528,9 @@ export default function MainTab() {
                   </div>
                 </div>
                 <div className="flex flex-col gap-4">
-                  <div className="p-4 rounded-xl border border-border bg-card dark:bg-surface-dark flex flex-col">
-                    <span className="text-muted-foreground text-xs font-medium uppercase tracking-wider">Active Proxies</span>
-                    <span className="text-2xl font-bold text-foreground mt-1">12 / 48</span>
-                  </div>
-                  <div className="p-4 rounded-xl border border-border bg-card dark:bg-surface-dark flex flex-col">
-                    <span className="text-muted-foreground text-xs font-medium uppercase tracking-wider">Traffic Mode</span>
-                    <span className="text-xl font-bold text-primary mt-1">Smart Rule</span>
+                  <div className="p-4 rounded-xl border border-border bg-card dark:bg-surface-dark flex flex-col flex-1 justify-center">
+                    <span className="text-muted-foreground text-xs font-medium uppercase tracking-wider">Total Proxies</span>
+                    <span className="text-2xl font-bold text-foreground mt-1">{totalProxies}</span>
                   </div>
                 </div>
               </div>
@@ -289,7 +569,7 @@ export default function MainTab() {
                   </div>
                   <div>
                     <p className="text-sm font-bold text-foreground">Active Profile</p>
-                    <p className="text-xs text-muted-foreground">production-v2.yaml</p>
+                    <p className="text-xs text-muted-foreground truncate max-w-[200px]">{activeProfile}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4 p-4 rounded-xl border border-border bg-card dark:bg-surface-dark">
@@ -298,7 +578,7 @@ export default function MainTab() {
                   </div>
                   <div>
                     <p className="text-sm font-bold text-foreground">Last Sync</p>
-                    <p className="text-xs text-muted-foreground">24 minutes ago</p>
+                    <p className="text-xs text-muted-foreground">{lastSync}</p>
                   </div>
                 </div>
               </div>
@@ -307,7 +587,7 @@ export default function MainTab() {
             {serverMessage && !aiResult && (
               <div
                 className={`p-4 rounded-lg text-sm ${
-                  serverMessage.includes("Error") || serverMessage.includes("错误") || serverMessage.includes("失败")
+                  serverMessage.includes("Error") || serverMessage.includes("failed")
                     ? "bg-destructive/10 text-destructive border border-destructive/20"
                     : "bg-emerald-500/10 text-emerald-600 border border-emerald-500/20"
                 }`}
@@ -320,52 +600,150 @@ export default function MainTab() {
       </div>
 
       {/* Snapshot History Sidebar */}
-      <aside className="w-80 border-l border-border flex flex-col bg-card dark:bg-background overflow-hidden">
-        <div className="p-6 border-b border-border">
-          <div className="flex items-center justify-between">
-            <h3 className="text-foreground font-bold text-base flex items-center gap-2">
-              <History size={18} />
-              Snapshot History
-            </h3>
-            <button className="text-primary text-xs font-semibold hover:underline">View All</button>
-          </div>
-        </div>
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {versions.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 opacity-30 text-center">
-              <History size={48} className="mb-2" />
-              <p className="text-xs">No snapshots yet</p>
-            </div>
-          ) : (
-            versions.map((v) => (
-              <div
-                key={v.id}
-                className="p-4 rounded-lg bg-muted/50 border border-border hover:border-primary/50 transition-colors group cursor-pointer"
-                onClick={() => handleRollback(v.id)}
+      {isHistoryOpen && (
+        <aside className="w-80 border-l border-border flex flex-col bg-card dark:bg-background overflow-hidden animate-in slide-in-from-right duration-300">
+          <div className="p-6 border-b border-border">
+            <div className="flex items-center justify-between">
+              <h3 className="text-foreground font-bold text-base flex items-center gap-2">
+                <History size={18} />
+                Snapshot History
+              </h3>
+              <button
+                className="text-primary text-xs font-semibold hover:underline"
+                onClick={() => setAllSnapshotsModal(true)}
               >
-                <div className="flex justify-between items-start mb-2">
-                  <span className="text-[10px] uppercase tracking-wider font-bold text-primary">Snapshot</span>
-                  <span className="text-[10px] text-muted-foreground">{formatTimestamp(v.timestamp)}</span>
-                </div>
-                <p className="text-sm font-medium text-foreground group-hover:text-primary transition-colors truncate">
-                  {v.description || "Untitled Snapshot"}
-                </p>
-                <div className="flex gap-2 mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                   <Button size="sm" variant="ghost" className="h-6 px-2 text-[10px]" onClick={(e) => { e.stopPropagation(); handleDeleteVersion(v.id); }}>
-                     Delete
-                   </Button>
-                </div>
+                View All
+              </button>
+            </div>
+          </div>
+          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            {versions.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-12 opacity-30 text-center">
+                <History size={48} className="mb-2" />
+                <p className="text-xs">No snapshots yet</p>
               </div>
-            ))
-          )}
-        </div>
-        <div className="p-6 bg-muted/30">
-          <button className="w-full flex items-center justify-center gap-2 py-3 rounded-lg border border-dashed border-border text-muted-foreground hover:text-foreground hover:border-primary transition-all text-xs font-medium">
-            <PlusCircle size={14} />
-            Create Manual Snapshot
-          </button>
-        </div>
-      </aside>
+            ) : (
+              versions.slice(0, 5).map((v) => (
+                <div
+                  key={v.id}
+                  className="p-4 rounded-lg bg-muted/50 border border-border hover:border-primary/50 transition-colors group cursor-pointer"
+                  onClick={() => handleRollback(v.id)}
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="text-[10px] uppercase tracking-wider font-bold text-primary">Snapshot</span>
+                    <span className="text-[10px] text-muted-foreground">{formatTimestamp(v.timestamp)}</span>
+                  </div>
+                  <p className="text-sm font-medium text-foreground group-hover:text-primary transition-colors truncate">
+                    {v.description || "Untitled Snapshot"}
+                  </p>
+                  <div className="flex gap-2 mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                     <Button size="sm" variant="ghost" className="h-6 px-2 text-[10px]" onClick={(e) => { e.stopPropagation(); handleDeleteVersion(v.id); }}>
+                       Delete
+                     </Button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+          <div className="p-6 bg-muted/30">
+            <button
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-lg border border-dashed border-border text-muted-foreground hover:text-foreground hover:border-primary transition-all text-xs font-medium"
+              onClick={handleCreateSnapshot}
+              disabled={isLoading}
+            >
+              <PlusCircle size={14} />
+              Create Manual Snapshot
+            </button>
+          </div>
+        </aside>
+      )}
+
+      {/* All Snapshots Modal */}
+      <Dialog open={allSnapshotsModal} onOpenChange={setAllSnapshotsModal}>
+        <DialogContent className="max-w-2xl">
+          <DialogClose onClose={() => setAllSnapshotsModal(false)} />
+          <DialogHeader>
+            <DialogTitle>All Configuration Snapshots</DialogTitle>
+            <DialogDescription>View and manage all your configuration history</DialogDescription>
+          </DialogHeader>
+          <DialogBody className="max-h-[500px] overflow-y-auto">
+            {versions.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
+                <History size={64} className="opacity-30 mb-4" />
+                <p className="text-sm font-medium">No snapshots yet</p>
+                <p className="text-xs mt-1">Create a snapshot to preserve your current configuration</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {versions.map((v, index) => (
+                  <div
+                    key={v.id}
+                    className={`p-4 rounded-lg border transition-colors ${
+                      index === 0 ? "border-primary/50 bg-primary/5" : "border-border bg-muted/30"
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          {index === 0 && (
+                            <span className="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded uppercase">
+                              Latest
+                            </span>
+                          )}
+                          <span className="text-[10px] text-muted-foreground">
+                            {formatTimestamp(v.timestamp)}
+                          </span>
+                        </div>
+                        <p className="font-bold text-foreground truncate">{v.description || "Untitled Snapshot"}</p>
+                        <p className="text-xs text-muted-foreground font-mono mt-1 truncate">{v.file_path}</p>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-8 gap-1"
+                          onClick={() => {
+                            handleRollback(v.id);
+                            setAllSnapshotsModal(false);
+                          }}
+                        >
+                          <RotateCcw size={14} />
+                          Restore
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-8 text-muted-foreground hover:text-destructive"
+                          onClick={() => handleDeleteVersion(v.id)}
+                        >
+                          <Trash2 size={14} />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </DialogBody>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAllSnapshotsModal(false)}>
+              Close
+            </Button>
+            <Button onClick={() => { handleCreateSnapshot(); }} className="gap-2">
+              <PlusCircle size={16} />
+              Create Snapshot
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
+}
+
+// TypeScript declarations for Web Speech API
+declare global {
+  interface Window {
+    SpeechRecognition: typeof SpeechRecognition;
+    webkitSpeechRecognition: typeof SpeechRecognition;
+  }
 }
