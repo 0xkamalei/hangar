@@ -89,9 +89,33 @@ pub fn get_resources_dir() -> Result<PathBuf> {
     Ok(PathBuf::from("resources"))
 }
 
-/// Get path to basic.yml
-pub fn get_basic_config_path() -> Result<PathBuf> {
+/// Get path to bundled basic.yml (in resources)
+pub fn get_default_basic_config_path() -> Result<PathBuf> {
     Ok(get_resources_dir()?.join("basic.yml"))
+}
+
+/// Get path to basic.yml (in .hangar directory - User/AI editable)
+pub fn get_basic_config_path() -> Result<PathBuf> {
+    Ok(get_hangar_dir()?.join("basic.yml"))
+}
+
+/// Ensure basic.yml exists in .hangar directory, copying from default if needed
+pub fn ensure_basic_config_exists() -> Result<()> {
+    let target_path = get_basic_config_path()?;
+    if !target_path.exists() {
+        let default_path = get_default_basic_config_path()?;
+        if default_path.exists() {
+            fs::copy(default_path, target_path)
+                .context("Failed to copy default basic.yml to .hangar")?;
+        } else {
+            // If default doesn't exist (e.g. running from cargo run without resources properly set up?),
+            // maybe we should just create an empty one or warn?
+            // For now, let's create a minimal valid basic.yml if source is missing to avoid crashes
+            let minimal_content = "port: 7890\nsocks-port: 7891\nallow-lan: true\nmode: rule\nlog-level: info\nexternal-controller: 127.0.0.1:9090\nproxies: []\nproxy-groups: []\nrules: []\n";
+            fs::write(target_path, minimal_content).context("Failed to write minimal basic.yml")?;
+        }
+    }
+    Ok(())
 }
 
 /// Get path to groups.yml

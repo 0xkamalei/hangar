@@ -123,6 +123,9 @@ enum HistoryCommands {
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
+    // Ensure basic config exists in user directory
+    storage::ensure_basic_config_exists()?;
+
     let cli = Cli::parse();
 
     match cli.command {
@@ -132,12 +135,13 @@ async fn main() -> anyhow::Result<()> {
                     let name = name.unwrap_or_else(|| "Untitled".to_string());
                     let mut subs = storage::load_subscriptions().unwrap_or_default();
                     let id = uuid::Uuid::new_v4().to_string();
+                    let current_time = chrono::Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
                     let mut new_sub = types::Subscription {
                         id: id.clone(),
                         name: name.clone(),
                         url,
                         enabled: true,
-                        last_updated: None,
+                        last_updated: Some(current_time),
                         node_count: None,
                     };
 
@@ -171,16 +175,17 @@ async fn main() -> anyhow::Result<()> {
                         println!("No subscriptions found.");
                     } else {
                         println!(
-                            "{:<36} {:<20} {:<10} {:<8}",
-                            "ID", "Name", "Nodes", "Enabled"
+                            "{:<36} {:<20} {:<10} {:<8} {:<20}",
+                            "ID", "Name", "Nodes", "Enabled", "Last Updated"
                         );
                         for sub in subs {
                             println!(
-                                "{:<36} {:<20} {:<10?} {:<8}",
+                                "{:<36} {:<20} {:<10?} {:<8} {:<20}",
                                 sub.id,
                                 sub.name,
                                 sub.node_count.unwrap_or(0),
-                                if sub.enabled { "✓" } else { "✗" }
+                                if sub.enabled { "✓" } else { "✗" },
+                                sub.last_updated.unwrap_or_else(|| "N/A".to_string())
                             );
                         }
                     }
@@ -203,6 +208,21 @@ async fn main() -> anyhow::Result<()> {
                         if subs.len() < len_before {
                             storage::save_subscriptions(&subs)?;
                             println!("✅ Removed subscription: {}", rid);
+
+                            // Remove cache file
+                            match storage::get_subscription_cache_path(&rid) {
+                                Ok(path) => {
+                                    if path.exists() {
+                                        match std::fs::remove_file(&path) {
+                                            Ok(_) => println!("🗑️ Removed cache file: {:?}", path),
+                                            Err(e) => {
+                                                println!("⚠️ Failed to remove cache file: {}", e)
+                                            }
+                                        }
+                                    }
+                                }
+                                Err(e) => println!("⚠️ Failed to get cache path: {}", e),
+                            }
                         } else {
                             println!("❌ Subscription not found.");
                         }
@@ -510,12 +530,36 @@ async fn main() -> anyhow::Result<()> {
                         tokio::time::sleep(duration).await;
                         println!("⏰ Auto-updating subscriptions...");
                         // Reload subs in case they changed
-                        let subs = storage::load_subscriptions().unwrap_or_default();
-                        for sub in &subs {
+                        let mut subs = storage::load_subscriptions().unwrap_or_default();
+                        let mut any_updated = false;
+
+                        for sub in &mut subs {
                             if sub.enabled {
-                                let _ = subscription::download_subscription(sub).await;
+                                match subscription::download_subscription(sub).await {
+                                    Ok(_) => {
+                                        sub.last_updated = Some(
+                                            chrono::Local::now()
+                                                .format("%Y-%m-%d %H:%M:%S")
+                                                .to_string(),
+                                        );
+                                        any_updated = true;
+                                    }
+                                    Err(e) => {
+                                        println!(
+                                            "⚠️ Failed to update subscription {}: {}",
+                                            sub.name, e
+                                        )
+                                    }
+                                }
                             }
                         }
+
+                        if any_updated {
+                            if let Err(e) = storage::save_subscriptions(&subs) {
+                                println!("❌ Failed to save updated subscriptions: {}", e);
+                            }
+                        }
+
                         // Re-merge
                         match proxy::merge_configs(&subs).await {
                             Ok(new_config) => {
@@ -738,32 +782,60 @@ async fn main() -> anyhow::Result<()> {
                 }
             }
             HistoryCommands::Rollback { id } => {
-                // Detect target from ID or description?
-                // list_versions parses it.
-                // We need rollback_to_version to handle it.
-                // Ideally rollback checks the ID pattern v_{type}_...
-                match version::rollback_to_version(&id) {
-                    Ok(_) => println!("✅ Rolled back {}", id),
-                    Err(e) => println!("❌ Rollback failed: {}", e),
+                // Resolve alias first (though rollback_to_version does it too, explicit feedback is nice)
+                match version::resolve_version_id(&id) {
+                    Ok(resolved) => match version::rollback_to_version(&resolved) {
+                        Ok(_) => println!("✅ Rolled back to {} ({})", id, resolved),
+                        Err(e) => println!("❌ Rollback failed: {}", e),
+                    },
+                    Err(e) => println!("❌ Invalid version ID or alias: {}", e),
                 }
-                // If rollback basic/groups, ideally merge again.
             }
             HistoryCommands::Diff { v1, v2 } => {
-                // ... (implementation generic)
-                let content1 = version::get_version_content(&v1)?;
-                let content2 = if let Some(id) = v2 {
-                    version::get_version_content(&id)?
-                } else {
-                    // diff against what? current.yaml? or the file corresponding to v1?
-                    // It's ambiguous. default to current.yaml is simple but might be wrong type.
-                    std::fs::read_to_string("current.yaml")?
+                let resolved_v1 = match version::resolve_version_id(&v1) {
+                    Ok(v) => v,
+                    Err(e) => {
+                        println!("❌ Invalid version v1: {}", e);
+                        return Ok(());
+                    }
                 };
+
+                // Get content for v1
+                let content1 = version::get_version_content(&resolved_v1)?;
+
+                // Determine content for v2
+                let (resolved_v2, content2) = if let Some(id) = v2 {
+                    let r_v2 = match version::resolve_version_id(&id) {
+                        Ok(v) => v,
+                        Err(e) => {
+                            println!("❌ Invalid version v2: {}", e);
+                            return Ok(());
+                        }
+                    };
+                    let c = version::get_version_content(&r_v2)?;
+                    (r_v2, c)
+                } else {
+                    // Default to current config if v2 is not provided
+                    let path = storage::get_current_config_path()?;
+                    if path.exists() {
+                        ("current.yaml".to_string(), std::fs::read_to_string(&path)?)
+                    } else {
+                        ("current (empty)".to_string(), "".to_string())
+                    }
+                };
+
+                println!("📊 Diffing {} vs {}...", resolved_v1, resolved_v2);
+
                 let diff = version::diff_configs(&content1, &content2);
-                for line in diff {
-                    match line.line_type.as_str() {
-                        "added" => println!("+ {}", line.content),
-                        "removed" => println!("- {}", line.content),
-                        _ => println!("  {}", line.content),
+                if diff.is_empty() {
+                    println!("No changes found.");
+                } else {
+                    for line in diff {
+                        match line.line_type.as_str() {
+                            "added" => println!("+ {}", line.content),
+                            "removed" => println!("- {}", line.content),
+                            _ => println!("  {}", line.content),
+                        }
                     }
                 }
             }
