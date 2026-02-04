@@ -1,8 +1,8 @@
 use crate::types::Notification;
-use anyhow::Result;
-use std::sync::Mutex;
-use lazy_static::lazy_static;
+
 use chrono::Utc;
+use lazy_static::lazy_static;
+use std::sync::Mutex;
 use uuid::Uuid;
 
 lazy_static! {

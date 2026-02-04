@@ -19,97 +19,21 @@ pub fn create_region_groups(proxies: &[ProxyNode]) -> Vec<ProxyGroup> {
     let mut groups = Vec::new();
     for (region, proxy_names) in region_map {
         if !proxy_names.is_empty() {
+            let mut extra = HashMap::new();
+            extra.insert(
+                "url".to_string(),
+                serde_json::to_value("http://www.gstatic.com/generate_204").unwrap(),
+            );
+            extra.insert("interval".to_string(), serde_json::to_value(300).unwrap());
+
             groups.push(ProxyGroup {
                 name: format!("{} 地区", region),
-                group_type: "select".to_string(),
+                group_type: "url-test".to_string(),
                 proxies: proxy_names,
-                extra: HashMap::new(),
+                extra,
             });
         }
     }
-
-    groups
-}
-
-/// 创建服务专用组
-pub fn create_service_groups(all_proxy_names: &[String], proxies: &[ProxyNode]) -> Vec<ProxyGroup> {
-    let mut groups = Vec::new();
-
-    // 节点选择组
-    groups.push(ProxyGroup {
-        name: "节点选择".to_string(),
-        group_type: "select".to_string(),
-        proxies: all_proxy_names.to_vec(),
-        extra: HashMap::new(),
-    });
-
-    // ChatGPT 组 (优选美国、英国、新加坡、台湾)
-    let chatgpt_regions = ["US", "UK", "SG", "TW"];
-    let chatgpt_proxies: Vec<String> = proxies
-        .iter()
-        .filter(|p| {
-            p.region
-                .as_ref()
-                .map(|r| chatgpt_regions.contains(&r.as_str()))
-                .unwrap_or(false)
-        })
-        .map(|p| p.name.clone())
-        .collect();
-
-    if !chatgpt_proxies.is_empty() {
-        groups.push(ProxyGroup {
-            name: "ChatGPT".to_string(),
-            group_type: "select".to_string(),
-            proxies: chatgpt_proxies,
-            extra: HashMap::new(),
-        });
-    }
-
-    // Gemini 组 (优选美国、英国、新加坡、香港、台湾)
-    let gemini_regions = ["US", "UK", "SG", "HK", "TW"];
-    let gemini_proxies: Vec<String> = proxies
-        .iter()
-        .filter(|p| {
-            p.region
-                .as_ref()
-                .map(|r| gemini_regions.contains(&r.as_str()))
-                .unwrap_or(false)
-        })
-        .map(|p| p.name.clone())
-        .collect();
-
-    if !gemini_proxies.is_empty() {
-        groups.push(ProxyGroup {
-            name: "Gemini".to_string(),
-            group_type: "select".to_string(),
-            proxies: gemini_proxies,
-            extra: HashMap::new(),
-        });
-    }
-
-    // Google 组
-    groups.push(ProxyGroup {
-        name: "Google".to_string(),
-        group_type: "select".to_string(),
-        proxies: all_proxy_names.to_vec(),
-        extra: HashMap::new(),
-    });
-
-    // Netflix 组
-    groups.push(ProxyGroup {
-        name: "Netflix".to_string(),
-        group_type: "select".to_string(),
-        proxies: all_proxy_names.to_vec(),
-        extra: HashMap::new(),
-    });
-
-    // Telegram 组
-    groups.push(ProxyGroup {
-        name: "Telegram".to_string(),
-        group_type: "select".to_string(),
-        proxies: all_proxy_names.to_vec(),
-        extra: HashMap::new(),
-    });
 
     groups
 }
@@ -159,15 +83,9 @@ pub async fn merge_configs(
         let groups_content = std::fs::read_to_string(&groups_path)?;
         // Assuming groups.yml structure matches what we expect (e.g., has a proxy-groups list)
         // For now, let's parse as Value and extract proxy-groups
-        let groups_yaml: serde_yaml::Value = serde_yaml::from_str(&groups_content)?;
-        if let Some(serde_yaml::Value::Sequence(seq)) = groups_yaml.get("proxy-groups") {
-            for g in seq {
-                let json_g = serde_json::to_value(g)?;
-                if let Ok(group) = serde_json::from_value::<ProxyGroup>(json_g) {
-                    extra_groups.push(group);
-                }
-            }
-        }
+        // groups.yml is a list of ProxyGroup
+        let groups: Vec<ProxyGroup> = serde_yaml::from_str(&groups_content)?;
+        extra_groups.extend(groups);
     }
 
     let mut all_proxies = basic_config.proxies.clone();
@@ -202,49 +120,23 @@ pub async fn merge_configs(
     println!("\n📊 Total proxies: {}", all_proxies.len());
 
     // 4. Create Groups
-    let all_proxy_names: Vec<String> = all_proxies.iter().map(|p| p.name.clone()).collect();
-    let mut proxy_groups = basic_config.proxy_groups.clone();
-
-    // Add groups from groups.yml
-    proxy_groups.extend(extra_groups);
+    // Ignore basic.yml proxy groups, start fresh
+    let mut proxy_groups: Vec<ProxyGroup> = Vec::new();
 
     // Auto-generated region groups
     let region_groups = create_region_groups(&all_proxies);
+    let region_group_names: Vec<String> = region_groups.iter().map(|g| g.name.clone()).collect();
+
+    // Modify extra_groups (from groups.yml) to include auto-generated region groups in their proxies
+    for group in &mut extra_groups {
+        group.proxies.extend(region_group_names.clone());
+    }
+
+    // Add modified extra_groups to final list
+    proxy_groups.extend(extra_groups);
+
+    // Add region_groups to final list
     proxy_groups.extend(region_groups);
-
-    // Auto-generated service groups (Chatgpt etc) - keep previous logic?
-    // The previous implementation hardcoded service groups. User wants groups.yml to control groups.
-    // If groups.yml is provided, maybe we rely on that + basic.yml?
-    // User said: "basic.yml中配置的rules中的target group都是以 groups.yml中配置的groups为基础"
-    // And "merge到逻辑主要是生成以国家命名的group，然后再把所有的groups添加到 groups.yml中配置的所有groups下"
-
-    // So logic:
-    // 1. Basic (has some groups?)
-    // 2. Groups.yml (has Main Groups like "Proxy", "Netflix", etc)
-    // 3. Region Groups (Auto generated)
-    // 4. We need to add all Region Groups to the Groups defined in groups.yml?
-
-    // Let's implement the "Add all region groups to groups in groups.yml" logic if practical.
-    // Usually groups.yml might have "proxies: []" or "use: []".
-    // If a group in groups.yml is "select", we might want to append all region groups to it?
-    // Or just append specific ones?
-
-    // Simplified Logic per cli.md intent:
-    // - Generate Region Groups (HK, US, JP...)
-    // - Load Groups from groups.yml (which might be "Global", "Streaming"...)
-    // - Add "Region Group Names" to the "proxies" list of appropriate groups in groups.yml?
-    //   Actually, usually we add "HK", "US" etc to "Proxy" group.
-
-    // For now, let's keep the `create_service_groups` logic but merge it with groups.yml intent if possible.
-    // However, to be safe and strictly follow "merge... groups.yml", let's append region groups to the list.
-
-    let service_groups = create_service_groups(&all_proxy_names, &all_proxies);
-    // Note: The previous service groups were hardcoded.
-    // If we want to fully switch to groups.yml, we should probably disable hardcoded ones except "Select"?
-    // But `create_service_groups` creates specific things like ChatGPT.
-    // Let's keep existing helper for now but append them.
-
-    proxy_groups.extend(service_groups);
 
     Ok(ClashConfig {
         base_config: basic_config.base_config,

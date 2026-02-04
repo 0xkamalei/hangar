@@ -7,17 +7,30 @@ use axum::{
     Router,
 };
 use std::sync::Arc;
-use tokio::sync::{RwLock, oneshot};
+use tokio::sync::{oneshot, RwLock};
 
 #[derive(Clone)]
 pub struct AppState {
     pub config: Arc<RwLock<ClashConfig>>,
 }
 
+impl AppState {
+    /// 从文件重新加载配置
+    pub async fn reload_from_file(&self, path: &std::path::Path) -> anyhow::Result<()> {
+        let content = std::fs::read_to_string(path)?;
+        let new_config: ClashConfig = serde_yaml::from_str(&content)?;
+
+        let mut config = self.config.write().await;
+        *config = new_config;
+
+        Ok(())
+    }
+}
+
 /// 获取配置的处理器
 async fn get_config(State(state): State<AppState>) -> Response {
     let config = state.config.read().await;
-    
+
     match serde_yaml::to_string(&*config) {
         Ok(yaml) => (StatusCode::OK, yaml).into_response(),
         Err(e) => (
@@ -41,23 +54,23 @@ pub async fn start_server(
     shutdown_rx: oneshot::Receiver<()>,
 ) -> anyhow::Result<()> {
     eprintln!("🔍 start_server 函数被调用: {}:{}", host, port);
-    
+
     let state = AppState {
         config: Arc::new(RwLock::new(config)),
     };
-    
+
     eprintln!("✓ AppState 创建成功");
-    
+
     let app = Router::new()
         .route("/config", get(get_config))
         .route("/health", get(health_check))
         .with_state(state);
-    
+
     eprintln!("✓ Router 创建成功");
-    
+
     let addr = format!("{}:{}", host, port);
     eprintln!("🔍 尝试绑定地址: {}", addr);
-    
+
     let listener = match tokio::net::TcpListener::bind(&addr).await {
         Ok(l) => {
             eprintln!("✓ TcpListener 绑定成功");
@@ -68,12 +81,12 @@ pub async fn start_server(
             return Err(anyhow::anyhow!("无法绑定地址 {}: {}", addr, e));
         }
     };
-    
+
     eprintln!("\n🌐 正在启动 HTTP 服务器...");
     eprintln!("   地址: http://{}", addr);
     eprintln!("   订阅链接: http://{}/config", addr);
     eprintln!("\n✨ 服务器已启动，等待请求...\n");
-    
+
     // 使用 with_graceful_shutdown 支持优雅关闭
     match axum::serve(listener, app)
         .with_graceful_shutdown(async move {

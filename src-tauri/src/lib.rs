@@ -9,7 +9,7 @@ pub mod subscription;
 pub mod types;
 pub mod version;
 
-use config::{load_app_config, load_basic_config, save_config};
+use config::{load_app_config, save_config};
 use proxy::merge_configs;
 use server::start_server;
 use std::sync::Arc;
@@ -398,18 +398,16 @@ fn import_subscriptions(path: String) -> Result<Vec<types::Subscription>, String
     let mut current_subs = storage::load_subscriptions().map_err(|e| e.to_string())?;
 
     // Add imported subscriptions (avoiding ID duplicates if any, though UUIDs should be unique)
-    let mut imported_count = 0;
+
     for mut sub in list.subscriptions {
         if !current_subs.iter().any(|s| s.id == sub.id) {
             // If ID matches but name/url different, we could generate new ID,
             // but for simplicity we just append if ID is not there.
             current_subs.push(sub);
-            imported_count += 1;
         } else {
             // Regnerate ID to avoid collision
             sub.id = uuid::Uuid::new_v4().to_string();
             current_subs.push(sub);
-            imported_count += 1;
         }
     }
 

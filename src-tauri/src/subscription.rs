@@ -1,8 +1,6 @@
-use crate::types::{ProxyNode, Subscription};
+use crate::types::Subscription;
 use anyhow::Result;
 use base64::{engine::general_purpose, Engine as _};
-use serde_json::Value;
-use std::collections::HashMap;
 
 pub async fn download_subscription(sub: &Subscription) -> Result<std::path::PathBuf> {
     let client = reqwest::Client::new();
@@ -23,6 +21,28 @@ pub async fn download_subscription(sub: &Subscription) -> Result<std::path::Path
         };
 
     crate::storage::save_proxies_cache(&sub.id, &decoded_content)
+}
+
+/// Count proxies in a subscription's cached YAML file
+pub fn count_proxies(subscription_id: &str) -> Result<usize> {
+    let cache_path = crate::storage::get_subscription_cache_path(subscription_id)?;
+
+    if !cache_path.exists() {
+        return Ok(0);
+    }
+
+    let content = std::fs::read_to_string(&cache_path)?;
+
+    // Parse YAML to extract proxies
+    let yaml_value: serde_yaml::Value = serde_yaml::from_str(&content)?;
+
+    if let Some(proxies) = yaml_value.get("proxies") {
+        if let Some(proxy_array) = proxies.as_sequence() {
+            return Ok(proxy_array.len());
+        }
+    }
+
+    Ok(0)
 }
 
 // Deprecated: fetch_subscription is removed in favor of download_subscription + local parsing

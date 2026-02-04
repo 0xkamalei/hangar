@@ -34,6 +34,7 @@ pub struct ProxyGroup {
     pub name: String,
     #[serde(rename = "type")]
     pub group_type: String,
+    #[serde(default)]
     pub proxies: Vec<String>,
     #[serde(flatten)]
     pub extra: HashMap<String, serde_json::Value>,

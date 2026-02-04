@@ -14,9 +14,21 @@ Manage Clash subscription links.
   Update: add命令除了保存到配置之外需要自动下载配置到 .hangar/cache/proxies/目录下; 需要使用 User-Agent: clash-verge/v2.4.5 下载 才能保证下载的是yml,或者文件File: application/octet-stream但是内容是yml
 
 - `list`
-  - Lists all saved subscriptions with ID, Name, and Node count.
+  - Lists all saved subscriptions with ID, Name, Node count, and Enabled status.
 - `remove <id>`
   - Removes a subscription by ID or index.
+- `enable <id>`
+  - Enables a subscription. The `<id>` parameter can be:
+    1. Subscription name (recommended, easiest to remember)
+    2. Full UUID
+    3. Numeric index (from `list` command)
+  - Enabled subscriptions will be included in merge operations and auto-updates.
+- `disable <id>`
+  - Disables a subscription. The `<id>` parameter can be:
+    1. Subscription name (recommended, easiest to remember)
+    2. Full UUID
+    3. Numeric index (from `list` command)
+  - Disabled subscriptions will be skipped in merge operations and auto-updates.
 - `fetch <id>`
   - Fetches/updates nodes for a specific subscription ID.
   - 更新nodes之后需要自动保存到 .hangar/cache/proxies/目录下
@@ -35,7 +47,30 @@ editor basic 命令用默认编辑期打开 basic.yaml 手动修改后，需要�
 Start the configuration server.
 - `--port <port>` (default: 8080)
 - `--host <host>` (default: 127.0.0.1)
-添加一个interval参数 不为0时允许auto refresh all subscriptions and merge new current.yaml ;server要能动态加载新的current.yaml
+- `--interval <seconds>` (default: 0, disabled)
+  - When set to a value > 0, enables auto-refresh of all subscriptions and merges new current.yaml
+  - Server automatically watches current.yaml for changes and reloads the configuration dynamically
+  - Any manual edits or automated updates to current.yaml will be detected and reloaded in real-time
+- `--daemon` / `-d` (default: false)
+  - Run server in daemon mode (background process)
+  - Logs are written to `~/.hangar/server.log`
+  - PID is saved to `~/.hangar/server.pid`
+  - Use the `hangar-server.sh` script to manage the daemon
+
+Example usage:
+```bash
+# Start server in foreground
+hangar serve --port 8080
+
+# Start server in background (daemon mode)
+hangar serve --daemon --port 8080 --interval 300
+
+# Using the management script
+./hangar-server.sh start    # Start daemon
+./hangar-server.sh status   # Check status
+./hangar-server.sh logs -f  # Follow logs
+./hangar-server.sh stop     # Stop daemon
+```
 
 ### `ai`
 AI-powered configuration modification.
