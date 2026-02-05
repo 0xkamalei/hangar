@@ -229,55 +229,20 @@ pub fn delete_version(id: &str) -> Result<()> {
 
 /// Simple text diff between two strings
 pub fn diff_configs(old: &str, new: &str) -> Vec<DiffLine> {
-    let old_lines: Vec<&str> = old.lines().collect();
-    let new_lines: Vec<&str> = new.lines().collect();
-
+    let diff = similar::TextDiff::from_lines(old, new);
     let mut result = Vec::new();
-    let max_len = old_lines.len().max(new_lines.len());
 
-    // Simple line-by-line diff (very naive, but sufficient for now as per previous implementation)
-    // Actually the previous implementation was doing a strict index-based comparison, which is not a real diff.
-    // Ideally we use a diff library, but for now we stick to the existing logic or improve slightly.
-    // The previous logic was:
-    // match (old_line, new_line)
-    // It doesn't handle insertions/deletions shifting lines.
-    // But unless we pull in a diff crate, writing a diff algorithm is complex.
-    // Let's stick to the previous simple logic for now as requested "simplified diff command" refers to arguments, not algo.
-
-    for i in 0..max_len {
-        let old_line = old_lines.get(i).copied();
-        let new_line = new_lines.get(i).copied();
-
-        match (old_line, new_line) {
-            (Some(o), Some(n)) if o == n => {
-                result.push(DiffLine {
-                    line_type: "unchanged".to_string(),
-                    content: o.to_string(),
-                });
-            }
-            (Some(o), Some(n)) => {
-                result.push(DiffLine {
-                    line_type: "removed".to_string(),
-                    content: o.to_string(),
-                });
-                result.push(DiffLine {
-                    line_type: "added".to_string(),
-                    content: n.to_string(),
-                });
-            }
-            (Some(o), None) => {
-                result.push(DiffLine {
-                    line_type: "removed".to_string(),
-                    content: o.to_string(),
-                });
-            }
-            (None, Some(n)) => {
-                result.push(DiffLine {
-                    line_type: "added".to_string(),
-                    content: n.to_string(),
-                });
-            }
-            (None, None) => {}
+    for op in diff.ops() {
+        for change in diff.iter_changes(op) {
+            let line_type = match change.tag() {
+                similar::ChangeTag::Delete => "removed",
+                similar::ChangeTag::Insert => "added",
+                similar::ChangeTag::Equal => "unchanged",
+            };
+            result.push(DiffLine {
+                line_type: line_type.to_string(),
+                content: change.value().trim_end_matches('\n').to_string(),
+            });
         }
     }
 

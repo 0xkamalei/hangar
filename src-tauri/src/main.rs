@@ -754,7 +754,7 @@ async fn main() -> anyhow::Result<()> {
             if target_file.exists() {
                 let content = std::fs::read_to_string(&target_file)?;
                 let patched = ai::apply_patch_to_config(&content, &result.operations)?;
-                version::save_version(&result.target, "ai_update", &content)?;
+                version::save_version(&result.target, &prompt, &content)?;
                 std::fs::write(&target_file, patched)?;
                 println!(
                     "✅ Applied changes to {:?} and created backup.",
@@ -777,9 +777,13 @@ async fn main() -> anyhow::Result<()> {
         Commands::History { subcommand } => match subcommand.unwrap_or(HistoryCommands::List) {
             HistoryCommands::List => {
                 let versions = version::list_versions()?;
-                println!("{:<40} {:<20} {}", "ID", "Time", "Description");
+                println!("{:<45} {:<20} {}", "ID", "Time", "Description");
                 for v in versions {
-                    println!("{:<40} {:<20} {}", v.id, v.timestamp, v.description);
+                    let dt = chrono::DateTime::from_timestamp(v.timestamp, 0)
+                        .unwrap_or_default()
+                        .with_timezone(&chrono::Local);
+                    let time_str = dt.format("%Y-%m-%d %H:%M:%S").to_string();
+                    println!("{:<45} {:<20} {}", v.id, time_str, v.description);
                 }
             }
             HistoryCommands::Rollback { id } => {
@@ -828,14 +832,16 @@ async fn main() -> anyhow::Result<()> {
                 println!("📊 Diffing {} vs {}...", resolved_v1, resolved_v2);
 
                 let diff = version::diff_configs(&content1, &content2);
-                if diff.is_empty() {
+                let has_changes = diff.iter().any(|l| l.line_type != "unchanged");
+
+                if !has_changes {
                     println!("No changes found.");
                 } else {
                     for line in diff {
                         match line.line_type.as_str() {
-                            "added" => println!("+ {}", line.content),
-                            "removed" => println!("- {}", line.content),
-                            _ => println!("  {}", line.content),
+                            "added" => println!("\x1b[32m+ {}\x1b[0m", line.content), // Green
+                            "removed" => println!("\x1b[31m- {}\x1b[0m", line.content), // Red
+                            _ => {} // Skip unchanged lines
                         }
                     }
                 }
