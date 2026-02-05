@@ -19,18 +19,11 @@ pub fn create_region_groups(proxies: &[ProxyNode]) -> Vec<ProxyGroup> {
     let mut groups = Vec::new();
     for (region, proxy_names) in region_map {
         if !proxy_names.is_empty() {
-            let mut extra = HashMap::new();
-            extra.insert(
-                "url".to_string(),
-                serde_json::to_value("http://www.gstatic.com/generate_204").unwrap(),
-            );
-            extra.insert("interval".to_string(), serde_json::to_value(300).unwrap());
-
             groups.push(ProxyGroup {
                 name: format!("{} 地区", region),
-                group_type: "url-test".to_string(),
+                group_type: "select".to_string(),
                 proxies: proxy_names,
-                extra,
+                extra: HashMap::new(),
             });
         }
     }
