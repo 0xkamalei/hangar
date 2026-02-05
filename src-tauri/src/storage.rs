@@ -108,11 +108,9 @@ pub fn ensure_basic_config_exists() -> Result<()> {
             fs::copy(default_path, target_path)
                 .context("Failed to copy default basic.yml to .hangar")?;
         } else {
-            // If default doesn't exist (e.g. running from cargo run without resources properly set up?),
-            // maybe we should just create an empty one or warn?
-            // For now, let's create a minimal valid basic.yml if source is missing to avoid crashes
-            let minimal_content = "port: 7890\nsocks-port: 7891\nallow-lan: true\nmode: rule\nlog-level: info\nexternal-controller: 127.0.0.1:9090\nproxies: []\nproxy-groups: []\nrules: []\n";
-            fs::write(target_path, minimal_content).context("Failed to write minimal basic.yml")?;
+            // Use bundled default if file not found
+            let default_content = include_str!("../resources/basic.yml");
+            fs::write(target_path, default_content).context("Failed to write bundled basic.yml")?;
         }
     }
     Ok(())
@@ -136,8 +134,12 @@ pub fn ensure_groups_config_exists() -> Result<()> {
         if default_path.exists() {
             fs::copy(default_path, target_path)
                 .context("Failed to copy default groups.yml to .hangar")?;
+        } else {
+            // Use bundled default if file not found
+            let default_content = include_str!("../resources/groups.yml");
+            fs::write(target_path, default_content)
+                .context("Failed to write bundled groups.yml")?;
         }
-        // If groups.yml doesn't exist, we don't strictly need it, so we can ignore if default is missing.
     }
     Ok(())
 }
