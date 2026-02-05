@@ -6,12 +6,19 @@ use axum::{
     routing::get,
     Router,
 };
+use chrono::Local;
+use serde::Deserialize;
 use std::sync::Arc;
 use tokio::sync::{oneshot, RwLock};
 
 #[derive(Clone)]
 pub struct AppState {
     pub config: Arc<RwLock<ClashConfig>>,
+}
+
+#[derive(Deserialize)]
+pub struct ConfigQuery {
+    pub refresh: Option<bool>,
 }
 
 impl AppState {
@@ -25,10 +32,64 @@ impl AppState {
 
         Ok(())
     }
+
+    /// 刷新配置（重新下载订阅并合并）
+    pub async fn refresh(&self) -> anyhow::Result<()> {
+        eprintln!("🔄 手动刷新订阅...");
+        // 1. 加载订阅
+        let mut subs = crate::storage::load_subscriptions().unwrap_or_default();
+        let mut any_updated = false;
+
+        for sub in &mut subs {
+            if sub.enabled {
+                match crate::subscription::download_subscription(sub).await {
+                    Ok(_) => {
+                        sub.last_updated =
+                            Some(Local::now().format("%Y-%m-%d %H:%M:%S").to_string());
+                        any_updated = true;
+                    }
+                    Err(e) => {
+                        eprintln!("⚠️ 无法更新订阅 {}: {}", sub.name, e)
+                    }
+                }
+            }
+        }
+
+        if any_updated {
+            crate::storage::save_subscriptions(&subs)?;
+        }
+
+        // 2. 合并配置
+        let merged = crate::proxy::merge_configs(&subs).await?;
+
+        // 3. 保存到 current.yaml
+        let current_path = crate::storage::get_current_config_path()?;
+        crate::config::save_config(&merged, current_path.to_str().unwrap())?;
+
+        // 4. 更新内存中的状态
+        let mut config = self.config.write().await;
+        *config = merged;
+
+        eprintln!("✅ 刷新完成");
+        Ok(())
+    }
 }
 
 /// 获取配置的处理器
-async fn get_config(State(state): State<AppState>) -> Response {
+async fn get_config(
+    State(state): State<AppState>,
+    axum::extract::Query(query): axum::extract::Query<ConfigQuery>,
+) -> Response {
+    if let Some(true) = query.refresh {
+        if let Err(e) = state.refresh().await {
+            return (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                format!("Failed to refresh config: {}", e),
+            )
+                .into_response();
+        }
+    }
+
     let config = state.config.read().await;
 
     match serde_yaml::to_string(&*config) {

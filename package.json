@@ -13,6 +13,7 @@
     "build:dmg": "./scripts/simple-dmg.sh",
     "build:dmg:fancy": "./scripts/build-dmg.sh",
     "build:quick": "./scripts/quick-build.sh",
+    "build:linux:arm64": "./scripts/build-linux.sh",
     "build:all": "bun run tauri:build && bun run build:dmg"
   },
   "dependencies": {

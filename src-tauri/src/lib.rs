@@ -15,12 +15,14 @@ use server::start_server;
 use std::sync::Arc;
 use tokio::sync::{oneshot, Mutex};
 
+#[cfg(feature = "gui")]
 // 全局状态，用于存储服务器是否已启动和服务器关闭通道
 lazy_static::lazy_static! {
     static ref SERVER_RUNNING: Arc<Mutex<bool>> = Arc::new(Mutex::new(false));
     static ref SERVER_SHUTDOWN: Arc<Mutex<Option<oneshot::Sender<()>>>> = Arc::new(Mutex::new(None));
 }
 
+#[cfg(feature = "gui")]
 // 获取配置文件路径
 fn get_config_path(app_handle: &tauri::AppHandle) -> Result<String, String> {
     // 先尝试当前目录（开发模式）
@@ -72,6 +74,7 @@ fn get_config_path(app_handle: &tauri::AppHandle) -> Result<String, String> {
     Ok(config_file.to_string_lossy().to_string())
 }
 
+#[cfg(feature = "gui")]
 #[tauri::command]
 async fn start_proxy_server(app_handle: tauri::AppHandle) -> Result<String, String> {
     eprintln!("🔍 start_proxy_server 被调用");
@@ -182,6 +185,7 @@ async fn start_proxy_server(app_handle: tauri::AppHandle) -> Result<String, Stri
     Ok(format!("✅ 服务器已启动\n\n📍 订阅链接: http://{}:{}/config\n\n💡 在 Clash Verge 中添加此链接即可使用", host_for_message, port))
 }
 
+#[cfg(feature = "gui")]
 #[tauri::command]
 async fn stop_proxy_server() -> Result<String, String> {
     eprintln!("🔍 stop_proxy_server 被调用");
@@ -207,12 +211,14 @@ async fn stop_proxy_server() -> Result<String, String> {
     Ok("✅ 服务器已停止".to_string())
 }
 
+#[cfg(feature = "gui")]
 #[tauri::command]
 async fn get_server_status() -> Result<bool, String> {
     let running = SERVER_RUNNING.lock().await;
     Ok(*running)
 }
 
+#[cfg(feature = "gui")]
 #[tauri::command]
 async fn refresh_subscription(id: String) -> Result<types::Subscription, String> {
     let mut subscriptions = storage::load_subscriptions()
@@ -252,11 +258,13 @@ async fn refresh_subscription(id: String) -> Result<types::Subscription, String>
     Ok(updated_sub)
 }
 
+#[cfg(feature = "gui")]
 #[tauri::command]
 fn get_subscriptions() -> Result<Vec<types::Subscription>, String> {
     storage::load_subscriptions().map_err(|e| format!("Failed to load subscriptions: {}", e))
 }
 
+#[cfg(feature = "gui")]
 #[tauri::command]
 fn add_subscription(name: String, url: String) -> Result<String, String> {
     let mut subscriptions = storage::load_subscriptions()
@@ -279,6 +287,7 @@ fn add_subscription(name: String, url: String) -> Result<String, String> {
     Ok("✅ 订阅添加成功".to_string())
 }
 
+#[cfg(feature = "gui")]
 #[tauri::command]
 fn update_subscription(
     index: usize,
@@ -309,6 +318,7 @@ fn update_subscription(
     Ok("✅ 订阅更新成功".to_string())
 }
 
+#[cfg(feature = "gui")]
 #[tauri::command]
 fn delete_subscription(index: usize) -> Result<String, String> {
     eprintln!("🔍 delete_subscription 被调用，index: {}", index);
@@ -339,6 +349,7 @@ fn delete_subscription(index: usize) -> Result<String, String> {
     Ok("✅ 订阅删除成功".to_string())
 }
 
+#[cfg(feature = "gui")]
 #[tauri::command]
 fn batch_delete_subscriptions(indices: Vec<usize>) -> Result<String, String> {
     let mut subscriptions = storage::load_subscriptions()
@@ -359,6 +370,7 @@ fn batch_delete_subscriptions(indices: Vec<usize>) -> Result<String, String> {
     Ok("✅ 批量删除成功".to_string())
 }
 
+#[cfg(feature = "gui")]
 #[tauri::command]
 fn batch_toggle_subscriptions(indices: Vec<usize>, enabled: bool) -> Result<String, String> {
     let mut subscriptions = storage::load_subscriptions()
@@ -376,6 +388,7 @@ fn batch_toggle_subscriptions(indices: Vec<usize>, enabled: bool) -> Result<Stri
     Ok("✅ 批量状态更新成功".to_string())
 }
 
+#[cfg(feature = "gui")]
 #[tauri::command]
 fn export_subscriptions(path: String) -> Result<String, String> {
     let subscriptions = storage::load_subscriptions().map_err(|e| e.to_string())?;
@@ -388,6 +401,7 @@ fn export_subscriptions(path: String) -> Result<String, String> {
     Ok("✅ 订阅已导出".to_string())
 }
 
+#[cfg(feature = "gui")]
 #[tauri::command]
 fn import_subscriptions(path: String) -> Result<Vec<types::Subscription>, String> {
     let content = std::fs::read_to_string(path).map_err(|e| e.to_string())?;
@@ -416,27 +430,32 @@ fn import_subscriptions(path: String) -> Result<Vec<types::Subscription>, String
     Ok(current_subs)
 }
 
+#[cfg(feature = "gui")]
 #[tauri::command]
 fn get_notifications() -> Vec<types::Notification> {
     notifications::get_notifications()
 }
 
+#[cfg(feature = "gui")]
 #[tauri::command]
 fn mark_notification_read(id: String) {
     notifications::mark_as_read(&id);
 }
 
+#[cfg(feature = "gui")]
 #[tauri::command]
 fn clear_notifications() {
     notifications::clear_notifications();
 }
 
+#[cfg(feature = "gui")]
 #[tauri::command]
 fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
 // AI Commands
+#[cfg(feature = "gui")]
 #[tauri::command]
 async fn generate_ai_patch(prompt: String) -> Result<ai::AiPatchResult, String> {
     ai::generate_config_patch(&prompt)
@@ -444,6 +463,7 @@ async fn generate_ai_patch(prompt: String) -> Result<ai::AiPatchResult, String> 
         .map_err(|e| format!("AI generation failed: {}", e))
 }
 
+#[cfg(feature = "gui")]
 #[tauri::command]
 async fn test_llm_connection(
     base_url: String,
@@ -455,6 +475,7 @@ async fn test_llm_connection(
         .map_err(|e| format!("{}", e))
 }
 
+#[cfg(feature = "gui")]
 #[tauri::command]
 async fn apply_ai_patch(operations: Vec<serde_json::Value>) -> Result<String, String> {
     let current_path = storage::get_current_config_path().map_err(|e| e.to_string())?;
@@ -477,11 +498,13 @@ async fn apply_ai_patch(operations: Vec<serde_json::Value>) -> Result<String, St
 }
 
 // Config Commands
+#[cfg(feature = "gui")]
 #[tauri::command]
 fn get_hangar_config() -> Result<types::HangarConfig, String> {
     storage::load_hangar_config().map_err(|e| format!("Failed to load config: {}", e))
 }
 
+#[cfg(feature = "gui")]
 #[tauri::command]
 fn save_hangar_config(config: types::HangarConfig) -> Result<String, String> {
     storage::save_hangar_config(&config).map_err(|e| format!("Failed to save config: {}", e))?;
@@ -489,16 +512,19 @@ fn save_hangar_config(config: types::HangarConfig) -> Result<String, String> {
 }
 
 // Version Commands
+#[cfg(feature = "gui")]
 #[tauri::command]
 fn list_versions() -> Result<Vec<types::ConfigVersion>, String> {
     version::list_versions().map_err(|e| format!("Failed to list versions: {}", e))
 }
 
+#[cfg(feature = "gui")]
 #[tauri::command]
 fn get_version_content(id: String) -> Result<String, String> {
     version::get_version_content(&id).map_err(|e| format!("Failed to get version: {}", e))
 }
 
+#[cfg(feature = "gui")]
 #[tauri::command]
 fn create_manual_snapshot(description: String) -> Result<types::ConfigVersion, String> {
     let current_path = storage::get_current_config_path().map_err(|e| e.to_string())?;
@@ -508,6 +534,7 @@ fn create_manual_snapshot(description: String) -> Result<types::ConfigVersion, S
     version::save_version("manual", &description, &current_content).map_err(|e| e.to_string())
 }
 
+#[cfg(feature = "gui")]
 #[tauri::command]
 fn get_versions_diff(id1: String, id2: Option<String>) -> Result<Vec<version::DiffLine>, String> {
     let content1 = version::get_version_content(&id1).map_err(|e| e.to_string())?;
@@ -522,12 +549,14 @@ fn get_versions_diff(id1: String, id2: Option<String>) -> Result<Vec<version::Di
     Ok(version::diff_configs(&content1, &content2))
 }
 
+#[cfg(feature = "gui")]
 #[tauri::command]
 fn rollback_version(id: String) -> Result<String, String> {
     version::rollback_to_version(&id).map_err(|e| format!("Failed to rollback: {}", e))?;
     Ok("已回退到指定版本".to_string())
 }
 
+#[cfg(feature = "gui")]
 #[tauri::command]
 fn delete_version(id: String) -> Result<String, String> {
     version::delete_version(&id).map_err(|e| format!("Failed to delete version: {}", e))?;
@@ -535,6 +564,7 @@ fn delete_version(id: String) -> Result<String, String> {
 }
 
 // Rules Commands
+#[cfg(feature = "gui")]
 #[tauri::command]
 fn open_config_in_editor(app_handle: tauri::AppHandle) -> Result<(), String> {
     let path = storage::get_current_config_path().map_err(|e| e.to_string())?;
@@ -546,6 +576,7 @@ fn open_config_in_editor(app_handle: tauri::AppHandle) -> Result<(), String> {
         .map_err(|e| e.to_string())
 }
 
+#[cfg(feature = "gui")]
 #[tauri::command]
 fn open_data_directory(app_handle: tauri::AppHandle) -> Result<(), String> {
     let path = storage::get_hangar_dir().map_err(|e| e.to_string())?;
@@ -557,27 +588,32 @@ fn open_data_directory(app_handle: tauri::AppHandle) -> Result<(), String> {
         .map_err(|e| e.to_string())
 }
 
+#[cfg(feature = "gui")]
 #[tauri::command]
 fn get_builtin_rules() -> Vec<rules::BuiltinRule> {
     rules::get_default_builtin_rules()
 }
 
+#[cfg(feature = "gui")]
 #[tauri::command]
 fn get_rule_sources() -> Result<Vec<rules::RuleSource>, String> {
     rules::load_rule_sources().map_err(|e| format!("Failed to load rule sources: {}", e))
 }
 
+#[cfg(feature = "gui")]
 #[tauri::command]
 fn add_rule_source(name: String, url: String) -> Result<rules::RuleSource, String> {
     rules::add_rule_source(name, url).map_err(|e| format!("Failed to add rule source: {}", e))
 }
 
+#[cfg(feature = "gui")]
 #[tauri::command]
 fn remove_rule_source(id: String) -> Result<String, String> {
     rules::remove_rule_source(&id).map_err(|e| format!("Failed to remove rule source: {}", e))?;
     Ok("规则源已删除".to_string())
 }
 
+#[cfg(feature = "gui")]
 #[tauri::command]
 async fn refresh_rules() -> Result<String, String> {
     rules::refresh_all_rules()
@@ -586,6 +622,7 @@ async fn refresh_rules() -> Result<String, String> {
     Ok("规则刷新完成".to_string())
 }
 
+#[cfg(feature = "gui")]
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()

@@ -596,7 +596,20 @@ async fn main() -> anyhow::Result<()> {
                         axum::routing::get(
                             |axum::extract::State(state): axum::extract::State<
                                 server::AppState,
+                            >,
+                             axum::extract::Query(query): axum::extract::Query<
+                                server::ConfigQuery,
                             >| async move {
+                                if let Some(true) = query.refresh {
+                                    if let Err(e) = state.refresh().await {
+                                        return (
+                                            axum::http::StatusCode::INTERNAL_SERVER_ERROR,
+                                            format!("Failed to refresh config: {}", e),
+                                        )
+                                            .into_response();
+                                    }
+                                }
+
                                 let config = state.config.read().await;
                                 match serde_yaml::to_string(&*config) {
                                     Ok(yaml) => (axum::http::StatusCode::OK, yaml).into_response(),
