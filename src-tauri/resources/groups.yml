@@ -9,8 +9,6 @@
   type: url-test
   url: 'http://www.gstatic.com/generate_204'
   interval: 300
-  proxies:
-    - DIRECT
 
 - name: 微软服务
   type: select
@@ -91,6 +89,12 @@
     - 节点选择
 
 - name: WhatsApp
+  type: select
+  proxies:
+    - DIRECT
+    - 节点选择
+
+- name: 漏网之鱼
   type: select
   proxies:
     - DIRECT

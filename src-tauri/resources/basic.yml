@@ -105,6 +105,7 @@ rule-providers:
     type: http
     url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/tld-not-cn.txt
 rules:
+- DOMAIN-KEYWORD,github,节点选择
 - DOMAIN,example.com,节点选择
 - DOMAIN,mjcdnsub.mjurl.com,DIRECT
 - DOMAIN-KEYWORD,mojie,自动选择
@@ -3972,4 +3973,4 @@ rules:
 - RULE-SET,telegramcidr,节点选择
 - GEOIP,LAN,DIRECT
 - GEOIP,CN,DIRECT
-- MATCH,DIRECT
+- MATCH,漏网之鱼
