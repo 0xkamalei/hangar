@@ -72,6 +72,8 @@ enum Commands {
     },
     /// Open config in default editor
     Editor,
+    /// Force update basic and groups config from built-in resources
+    ForceUpdateConfig,
 }
 
 #[derive(Subcommand)]
@@ -870,6 +872,46 @@ async fn main() -> anyhow::Result<()> {
                 .wait()
                 .context("Failed to wait for editor")?;
             println!("✅ Edit closed.");
+        }
+        Commands::ForceUpdateConfig => {
+            println!("🔄 Force updating configuration from resources...");
+            
+            // Define resource paths and target paths
+            // In a real Tauri/CLI app, resources might be embedded or relative to the executable
+            // Here we assume they are in the 'resources' folder relative to the CWD or project root
+            let resources = vec![
+                ("resources/basic.yml", storage::get_basic_config_path()?),
+                ("resources/groups.yml", storage::get_groups_config_path()?),
+            ];
+
+            for (src_rel, dest_path) in resources {
+                let src_path = std::path::Path::new(src_rel);
+                if src_path.exists() {
+                    // Create backup of old config
+                    if dest_path.exists() {
+                        let backup_path = dest_path.with_extension("yml.bak");
+                        std::fs::copy(&dest_path, &backup_path)?;
+                        println!("📦 Created backup of {:?} to {:?}", dest_path.file_name().unwrap(), backup_path);
+                    }
+                    
+                    std::fs::copy(src_path, &dest_path)?;
+                    println!("✅ Successfully updated {:?}", dest_path);
+                } else {
+                    println!("⚠️ Resource not found: {:?}", src_rel);
+                }
+            }
+
+            // Trigger a merge to apply the new base configs
+            println!("🔄 Re-merging with new base configurations...");
+            let subs = storage::load_subscriptions().unwrap_or_default();
+            match proxy::merge_configs(&subs).await {
+                Ok(merged) => {
+                    let output_path = storage::get_current_config_path()?;
+                    hangar_lib::config::save_config(&merged, output_path.to_str().unwrap())?;
+                    println!("✨ All set! Configuration updated and regenerated.");
+                }
+                Err(e) => println!("❌ Merge failed after update: {}", e),
+            }
         }
         Commands::Config {
             api_key,
