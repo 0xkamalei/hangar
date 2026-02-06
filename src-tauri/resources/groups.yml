@@ -95,3 +95,4 @@
   proxies:
     - DIRECT
     - 节点选择
+    - 自动选择

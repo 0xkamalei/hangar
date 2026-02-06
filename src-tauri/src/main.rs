@@ -874,31 +874,28 @@ async fn main() -> anyhow::Result<()> {
             println!("✅ Edit closed.");
         }
         Commands::ForceUpdateConfig => {
-            println!("🔄 Force updating configuration from resources...");
+            println!("🔄 Force updating configuration from built-in resources...");
             
-            // Define resource paths and target paths
-            // In a real Tauri/CLI app, resources might be embedded or relative to the executable
-            // Here we assume they are in the 'resources' folder relative to the CWD or project root
+            // Hardcode the built-in config content using include_str!
+            // This ensures the config is embedded in the binary
+            let basic_builtin = include_str!("../resources/basic.yml");
+            let groups_builtin = include_str!("../resources/groups.yml");
+
             let resources = vec![
-                ("resources/basic.yml", storage::get_basic_config_path()?),
-                ("resources/groups.yml", storage::get_groups_config_path()?),
+                (basic_builtin, storage::get_basic_config_path()?),
+                (groups_builtin, storage::get_groups_config_path()?),
             ];
 
-            for (src_rel, dest_path) in resources {
-                let src_path = std::path::Path::new(src_rel);
-                if src_path.exists() {
-                    // Create backup of old config
-                    if dest_path.exists() {
-                        let backup_path = dest_path.with_extension("yml.bak");
-                        std::fs::copy(&dest_path, &backup_path)?;
-                        println!("📦 Created backup of {:?} to {:?}", dest_path.file_name().unwrap(), backup_path);
-                    }
-                    
-                    std::fs::copy(src_path, &dest_path)?;
-                    println!("✅ Successfully updated {:?}", dest_path);
-                } else {
-                    println!("⚠️ Resource not found: {:?}", src_rel);
+            for (content, dest_path) in resources {
+                // Create backup of old config
+                if dest_path.exists() {
+                    let backup_path = dest_path.with_extension("yml.bak");
+                    std::fs::copy(&dest_path, &backup_path)?;
+                    println!("📦 Created backup of {:?} to {:?}", dest_path.file_name().unwrap(), backup_path);
                 }
+                
+                std::fs::write(&dest_path, content)?;
+                println!("✅ Successfully updated {:?}", dest_path);
             }
 
             // Trigger a merge to apply the new base configs
