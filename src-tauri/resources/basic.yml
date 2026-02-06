@@ -7,6 +7,18 @@ dns:
   enable: true
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
+  fake-ip-filter:
+  - "*.lan"
+  - "*.localdomain"
+  - "*.example"
+  - "*.invalid"
+  - "*.localhost"
+  - "*.test"
+  - "*.local"
+  - "*.home.arpa"
+  - "geosite:cn"
+  - "geosite:apple"
+  - "geosite:google@cn"
   fallback:
   - https://doh.dns.sb/dns-query
   - https://dns.cloudflare.com/dns-query
@@ -20,6 +32,10 @@ dns:
   nameserver:
   - https://doh.pub/dns-query
   - https://dns.alidns.com/dns-query
+  proxy-server-nameserver:
+  - 223.5.5.5
+  - 119.29.29.29
+  - https://dns.cloudflare.com/dns-query
   use-hosts: true
 external-controller: 127.0.0.1:9090
 log-level: info
