@@ -103,6 +103,11 @@ enum SubCommands {
         /// The ID or index of the subscription
         id: String,
     },
+    /// Update a specific subscription
+    Update {
+        /// The name or ID of the subscription
+        name_or_id: String,
+    },
 }
 
 #[derive(Subcommand)]
@@ -351,6 +356,76 @@ async fn main() -> anyhow::Result<()> {
                     } else {
                         println!("❌ Subscription not found: '{}'", id);
                         println!("   Try using the subscription name, ID, or index from 'hangar sub list'");
+                    }
+                }
+                SubCommands::Update { name_or_id } => {
+                    let mut subs = storage::load_subscriptions().unwrap_or_default();
+                    let mut found_sub: Option<types::Subscription> = None;
+
+                    // Try to find subscription by name first
+                    for sub in &subs {
+                        if sub.name == name_or_id {
+                            found_sub = Some(sub.clone());
+                            break;
+                        }
+                    }
+
+                    // If not found by name, try by ID
+                    if found_sub.is_none() {
+                        for sub in &subs {
+                            if sub.id == name_or_id {
+                                found_sub = Some(sub.clone());
+                                break;
+                            }
+                        }
+                    }
+
+                    if let Some(mut sub) = found_sub {
+                        println!("📥 Updating subscription: {}...", sub.name);
+                        
+                        match subscription::download_subscription(&sub).await {
+                            Ok(path) => {
+                                println!("✅ Downloaded to {:?}", path);
+                                
+                                // Parse and get proxy summary
+                                match subscription::parse_proxies_summary(&sub.id) {
+                                    Ok((count, names)) => {
+                                        sub.node_count = Some(count);
+                                        sub.last_updated = Some(
+                                            chrono::Local::now()
+                                                .format("%Y-%m-%d %H:%M:%S")
+                                                .to_string(),
+                                        );
+                                        
+                                        println!("✅ Found {} nodes:", count);
+                                        for name in &names {
+                                            println!("   - {}", name);
+                                        }
+                                        
+                                        // Update the subscription in the list
+                                        for s in &mut subs {
+                                            if s.id == sub.id {
+                                                s.node_count = sub.node_count;
+                                                s.last_updated = sub.last_updated.clone();
+                                                break;
+                                            }
+                                        }
+                                        
+                                        storage::save_subscriptions(&subs)?;
+                                        println!("✅ Subscription updated successfully");
+                                    }
+                                    Err(e) => {
+                                        println!("⚠️ Failed to parse proxies: {}", e);
+                                    }
+                                }
+                            }
+                            Err(e) => {
+                                println!("❌ Failed to update subscription: {}", e);
+                            }
+                        }
+                    } else {
+                        println!("❌ Subscription not found: '{}'", name_or_id);
+                        println!("   Try using the subscription name or ID from 'hangar sub list'");
                     }
                 }
             }

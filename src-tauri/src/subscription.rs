@@ -45,6 +45,33 @@ pub fn count_proxies(subscription_id: &str) -> Result<usize> {
     Ok(0)
 }
 
+/// Parse proxies in a subscription's cached YAML file and return count and names
+pub fn parse_proxies_summary(subscription_id: &str) -> Result<(usize, Vec<String>)> {
+    let cache_path = crate::storage::get_subscription_cache_path(subscription_id)?;
+
+    if !cache_path.exists() {
+        return Ok((0, vec![]));
+    }
+
+    let content = std::fs::read_to_string(&cache_path)?;
+    let yaml_value: serde_yaml::Value = serde_yaml::from_str(&content)?;
+
+    let mut names = Vec::new();
+
+    if let Some(proxies) = yaml_value.get("proxies") {
+        if let Some(proxy_array) = proxies.as_sequence() {
+            for proxy in proxy_array {
+                if let Some(name) = proxy.get("name").and_then(|n| n.as_str()) {
+                    names.push(name.to_string());
+                }
+            }
+            return Ok((names.len(), names));
+        }
+    }
+
+    Ok((0, vec![]))
+}
+
 // Deprecated: fetch_subscription is removed in favor of download_subscription + local parsing
 // We keep a stub if needed or just remove it. Removing it as per plan.
 
