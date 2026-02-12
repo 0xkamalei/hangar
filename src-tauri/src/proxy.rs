@@ -1,11 +1,12 @@
 use crate::subscription::extract_region;
 use crate::types::{ClashConfig, ProxyGroup, ProxyNode, Subscription};
 use anyhow::{Context, Result};
-use std::collections::{HashMap, HashSet};
+use indexmap::IndexMap;
+use std::collections::HashSet;
 
 /// 创建地区分组
 pub fn create_region_groups(proxies: &[ProxyNode]) -> Vec<ProxyGroup> {
-    let mut region_map: HashMap<String, Vec<String>> = HashMap::new();
+    let mut region_map: IndexMap<String, Vec<String>> = IndexMap::new();
 
     for proxy in proxies {
         if let Some(region) = &proxy.region {
@@ -24,7 +25,7 @@ pub fn create_region_groups(proxies: &[ProxyNode]) -> Vec<ProxyGroup> {
                 group_type: "fallback".to_string(), // 修改为 fallback
                 proxies: proxy_names,
                 extra: {
-                    let mut map = HashMap::new();
+                    let mut map = IndexMap::new();
                     map.insert(
                         "url".to_string(),
                         serde_json::json!("http://www.gstatic.com/generate_204"),

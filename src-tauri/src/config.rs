@@ -150,13 +150,13 @@ mod tests {
 
     #[test]
     fn test_save_and_load_config() {
-        use std::collections::HashMap;
+        use indexmap::IndexMap;
 
         let temp_dir = TempDir::new().unwrap();
         let output_path = temp_dir.path().join("test_output.yaml");
 
         let config = ClashConfig {
-            base_config: HashMap::new(),
+            base_config: IndexMap::new(),
             proxies: vec![],
             proxy_groups: vec![],
             rules: vec![],

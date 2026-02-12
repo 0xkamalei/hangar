@@ -1,5 +1,5 @@
+use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -26,7 +26,7 @@ pub struct ProxyNode {
     #[serde(skip)]
     pub airport: String,
     #[serde(flatten)]
-    pub extra: HashMap<String, serde_json::Value>,
+    pub extra: IndexMap<String, serde_json::Value>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -37,13 +37,13 @@ pub struct ProxyGroup {
     #[serde(default)]
     pub proxies: Vec<String>,
     #[serde(flatten)]
-    pub extra: HashMap<String, serde_json::Value>,
+    pub extra: IndexMap<String, serde_json::Value>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ClashConfig {
     #[serde(flatten)]
-    pub base_config: HashMap<String, serde_yaml::Value>,
+    pub base_config: IndexMap<String, serde_yaml::Value>,
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub proxies: Vec<ProxyNode>,
     #[serde(
@@ -55,7 +55,38 @@ pub struct ClashConfig {
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub rules: Vec<String>,
     #[serde(rename = "rule-providers", skip_serializing_if = "Option::is_none")]
-    pub rule_providers: Option<HashMap<String, serde_yaml::Value>>,
+    pub rule_providers: Option<IndexMap<String, serde_yaml::Value>>,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_proxy_node_order_preservation() {
+        let yaml_str = r#"
+name: test
+type: trojan
+server: example.com
+port: 443
+password: pass
+udp: true
+skip-cert-verify: true
+sni: sni.example.com
+"#;
+        let node: ProxyNode = serde_yaml::from_str(yaml_str).unwrap();
+        
+        // Check order in extra
+        let extra_keys: Vec<_> = node.extra.keys().cloned().collect();
+        assert_eq!(extra_keys, vec!["password", "udp", "skip-cert-verify", "sni"]);
+
+        let serialized = serde_yaml::to_string(&node).unwrap();
+        println!("{}", serialized);
+        
+        // The serialized YAML should have keys in the same order
+        // Note: name, type, server, port come first because they are fixed fields in the struct
+        assert!(serialized.contains("password: pass\nudp: true\nskip-cert-verify: true\nsni: sni.example.com"));
+    }
 }
 
 // New data structures for Hangar
