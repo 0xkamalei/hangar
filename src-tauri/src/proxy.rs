@@ -25,7 +25,10 @@ pub fn create_region_groups(proxies: &[ProxyNode]) -> Vec<ProxyGroup> {
                 proxies: proxy_names,
                 extra: {
                     let mut map = HashMap::new();
-                    map.insert("url".to_string(), serde_json::json!("http://www.gstatic.com/generate_204"));
+                    map.insert(
+                        "url".to_string(),
+                        serde_json::json!("http://www.gstatic.com/generate_204"),
+                    );
                     map.insert("interval".to_string(), serde_json::json!(3600));
                     map
                 },
@@ -54,13 +57,30 @@ pub fn parse_cached_subscription(sub: &Subscription) -> Result<Vec<ProxyNode>> {
             let json_val = serde_json::to_value(proxy_val)?;
             if let Ok(mut node) = serde_json::from_value::<ProxyNode>(json_val) {
                 // Add airport name prefix
-                node.name = format!("[{}] {}", sub.name, node.name);
+                // Remove leading whitespace and emojis from the node name
+                let clean_name = node
+                    .name
+                    .trim_start_matches(|c: char| c.is_whitespace() || is_emoji_char(c));
+                node.name = format!("[{}]-{}", sub.name, clean_name);
                 node.airport = sub.name.clone();
                 proxies.push(node);
             }
         }
     }
     Ok(proxies)
+}
+
+/// Check if a character is an emoji (basic ranges)
+fn is_emoji_char(c: char) -> bool {
+    let u = c as u32;
+    (0x1F600..=0x1F64F).contains(&u) || // Emoticons
+    (0x1F300..=0x1F5FF).contains(&u) || // Misc Symbols and Pictographs
+    (0x1F680..=0x1F6FF).contains(&u) || // Transport and Map
+    (0x1F1E0..=0x1F1FF).contains(&u) || // Regional Indicator Symbols (Flags)
+    (0x2600..=0x26FF).contains(&u) ||   // Misc symbols
+    (0x2700..=0x27BF).contains(&u) ||   // Dingbats
+    (0xFE00..=0xFE0F).contains(&u) ||   // Variation Selectors
+    (0x1F900..=0x1F9FF).contains(&u) // Supplemental Symbols and Pictographs
 }
 
 /// 合并配置
@@ -123,10 +143,10 @@ pub async fn merge_configs(
 
     // Auto-generated region groups
     let region_groups = create_region_groups(&all_proxies);
-    
+
     // 定义 AI 支持地区的优先级顺序
     let ai_priority = vec![
-        "US", "SG", "JP", "TW", "KR", "DE", "UK", "CA", "IN", "FR", "AU", "BR"
+        "US", "SG", "JP", "TW", "KR", "DE", "UK", "CA", "IN", "FR", "AU", "BR",
     ];
 
     // 按照优先级顺序提取 AI 支持的分组名
@@ -141,8 +161,9 @@ pub async fn merge_configs(
     // 兜底：如果还有其他在 is_ai_supported_region 列表里但在 ai_priority 没排名的，也加进去
     for g in &region_groups {
         let region_code = g.name.split("-").next().unwrap_or("");
-        if crate::subscription::is_ai_supported_region(region_code) 
-           && !ai_supported_region_group_names.contains(&g.name) {
+        if crate::subscription::is_ai_supported_region(region_code)
+            && !ai_supported_region_group_names.contains(&g.name)
+        {
             ai_supported_region_group_names.push(g.name.clone());
         }
     }
@@ -150,10 +171,13 @@ pub async fn merge_configs(
     // Modify extra_groups (from groups.yml) to include auto-generated region groups in their proxies
     for group in &mut extra_groups {
         if group.name == "自动选择" || group.name == "AI-专用" {
-            group.proxies.extend(ai_supported_region_group_names.clone());
+            group
+                .proxies
+                .extend(ai_supported_region_group_names.clone());
         } else {
             // 其他分组可以包含所有地区
-            let all_region_group_names: Vec<String> = region_groups.iter().map(|g| g.name.clone()).collect();
+            let all_region_group_names: Vec<String> =
+                region_groups.iter().map(|g| g.name.clone()).collect();
             group.proxies.extend(all_region_group_names);
         }
     }
