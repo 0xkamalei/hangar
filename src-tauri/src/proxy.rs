@@ -147,7 +147,7 @@ pub async fn merge_configs(
 
     // 定义 AI 支持地区的优先级顺序
     let ai_priority = vec![
-        "US", "SG", "JP", "TW", "KR", "DE", "UK", "CA", "IN", "FR", "AU", "BR",
+        "TW", "US", "JP", "KR", "SG", "UK", "DE", "CA", "AU", "NG", "BR",
     ];
 
     // 按照优先级顺序提取 AI 支持的分组名
