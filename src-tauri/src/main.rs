@@ -911,9 +911,14 @@ async fn main() -> anyhow::Result<()> {
                     (r_v2, c)
                 } else {
                     // Default to current config if v2 is not provided
-                    let path = storage::get_current_config_path()?;
+                    let path = storage::get_current_config_path_for_diff()?;
                     if path.exists() {
-                        ("current.yaml".to_string(), std::fs::read_to_string(&path)?)
+                        let label = path
+                            .file_name()
+                            .and_then(|name| name.to_str())
+                            .unwrap_or("current.yml")
+                            .to_string();
+                        (label, std::fs::read_to_string(&path)?)
                     } else {
                         ("current (empty)".to_string(), "".to_string())
                     }

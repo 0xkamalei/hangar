@@ -29,6 +29,22 @@ pub fn get_current_config_path() -> Result<PathBuf> {
     Ok(get_hangar_dir()?.join("current.yaml"))
 }
 
+/// Get the path to current config for diff operations.
+/// Prefer current.yaml and fall back to legacy current.yml.
+pub fn get_current_config_path_for_diff() -> Result<PathBuf> {
+    let current_yaml = get_current_config_path()?;
+    if current_yaml.exists() {
+        return Ok(current_yaml);
+    }
+
+    let legacy_current_yml = get_hangar_dir()?.join("current.yml");
+    if legacy_current_yml.exists() {
+        return Ok(legacy_current_yml);
+    }
+
+    Ok(current_yaml)
+}
+
 /// Get the path to server.pid
 pub fn get_server_pid_path() -> Result<PathBuf> {
     Ok(get_hangar_dir()?.join("server.pid"))

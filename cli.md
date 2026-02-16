@@ -103,7 +103,7 @@ Version history management for configurations.
 - `rollback <id>`
   - Reverts `current.yaml` to a specific version.
 - `diff <v1> [v2]`
-  - Shows the diff between version `v1` and `v2` (or current).
+  - Shows the diff between version `v1` and `v2` (or current config file: `current.yaml`, with `current.yml` fallback).
 
 ### `config`
 Application configuration (LLM settings).

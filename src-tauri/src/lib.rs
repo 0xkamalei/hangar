@@ -542,8 +542,12 @@ fn get_versions_diff(id1: String, id2: Option<String>) -> Result<Vec<version::Di
     let content2 = if let Some(id) = id2 {
         version::get_version_content(&id).map_err(|e| e.to_string())?
     } else {
-        let current_path = storage::get_current_config_path().map_err(|e| e.to_string())?;
-        std::fs::read_to_string(&current_path).map_err(|e| e.to_string())?
+        let current_path = storage::get_current_config_path_for_diff().map_err(|e| e.to_string())?;
+        if current_path.exists() {
+            std::fs::read_to_string(&current_path).map_err(|e| e.to_string())?
+        } else {
+            String::new()
+        }
     };
 
     Ok(version::diff_configs(&content1, &content2))

@@ -111,8 +111,11 @@ hangar history list
 # 回滚到某个版本
 hangar history rollback <version-id>
 
-# 对比两个版本
+# 对比两个历史版本
 hangar history diff <v1> <v2>
+
+# 对比历史版本和当前配置（默认 current.yaml，兼容 current.yml）
+hangar history diff <v1>
 ```
 
 ### 手动编辑配置

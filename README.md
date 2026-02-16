@@ -178,8 +178,11 @@ hangar history list
 # 回滚到指定版本
 hangar history rollback <ID>
 
-# 查看差异
+# 查看两个历史版本差异
 hangar history diff <ID1> <ID2>
+
+# 查看历史版本和当前配置差异（默认 current.yaml，兼容 current.yml）
+hangar history diff <ID1>
 ```
 
 ### 编辑配置 (`editor`)
