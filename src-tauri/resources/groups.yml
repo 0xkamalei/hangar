@@ -47,9 +47,7 @@
     - 节点选择
 
 - name: AI-专用
-  type: fallback
-  url: 'http://www.gstatic.com/generate_204'
-  interval: 3600
+  type: select
   proxies:
     - 自动选择
     - 节点选择

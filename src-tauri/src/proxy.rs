@@ -22,7 +22,7 @@ pub fn create_region_groups(proxies: &[ProxyNode]) -> Vec<ProxyGroup> {
         if !proxy_names.is_empty() {
             groups.push(ProxyGroup {
                 name: format!("{}-地区", region),
-                group_type: "fallback".to_string(), // 修改为 fallback
+                group_type: "load-balance".to_string(),
                 proxies: proxy_names,
                 extra: {
                     let mut map = IndexMap::new();
@@ -31,6 +31,7 @@ pub fn create_region_groups(proxies: &[ProxyNode]) -> Vec<ProxyGroup> {
                         serde_json::json!("http://www.gstatic.com/generate_204"),
                     );
                     map.insert("interval".to_string(), serde_json::json!(3600));
+                    map.insert("strategy".to_string(), serde_json::json!("consistent-hashing"));
                     map
                 },
             });
