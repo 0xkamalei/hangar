@@ -110,7 +110,7 @@ pub fn extract_region(name: &str) -> Option<String> {
 /// 判断地区是否支持主流 AI 服务 (Gemini, OpenAI, Claude)
 pub fn is_ai_supported_region(region: &str) -> bool {
     let supported = vec![
-        "US", "UK", "JP", "SG", "TW", "KR", "DE", "CA", "IN", "FR", "AU", "BR"
+        "US", "UK", "JP", "SG", "TW", "KR", "DE", "CA", "IN", "FR", "AU", "BR",
     ];
     supported.contains(&region)
 }

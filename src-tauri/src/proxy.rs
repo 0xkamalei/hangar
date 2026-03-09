@@ -18,7 +18,7 @@ pub fn create_region_groups(proxies: &[ProxyNode]) -> (Vec<ProxyGroup>, Vec<Prox
                 .entry((airport, region.clone()))
                 .or_default()
                 .push(proxy.name.clone());
-            
+
             // 按地区分组（直接使用节点）
             region_map
                 .entry(region.clone())
@@ -32,7 +32,7 @@ pub fn create_region_groups(proxies: &[ProxyNode]) -> (Vec<ProxyGroup>, Vec<Prox
     for ((airport, region), proxy_names) in airport_region_map {
         if !proxy_names.is_empty() {
             let group_name = format!("[{}]-{}-地区", airport, region);
-            
+
             airport_region_groups.push(ProxyGroup {
                 name: group_name,
                 group_type: "load-balance".to_string(),
@@ -44,7 +44,10 @@ pub fn create_region_groups(proxies: &[ProxyNode]) -> (Vec<ProxyGroup>, Vec<Prox
                         serde_json::json!("http://www.gstatic.com/generate_204"),
                     );
                     map.insert("interval".to_string(), serde_json::json!(3600));
-                    map.insert("strategy".to_string(), serde_json::json!("consistent-hashing"));
+                    map.insert(
+                        "strategy".to_string(),
+                        serde_json::json!("consistent-hashing"),
+                    );
                     map
                 },
             });
@@ -66,7 +69,10 @@ pub fn create_region_groups(proxies: &[ProxyNode]) -> (Vec<ProxyGroup>, Vec<Prox
                         serde_json::json!("http://www.gstatic.com/generate_204"),
                     );
                     map.insert("interval".to_string(), serde_json::json!(3600));
-                    map.insert("strategy".to_string(), serde_json::json!("consistent-hashing"));
+                    map.insert(
+                        "strategy".to_string(),
+                        serde_json::json!("consistent-hashing"),
+                    );
                     map
                 },
             });

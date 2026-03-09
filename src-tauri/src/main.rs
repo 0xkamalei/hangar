@@ -128,8 +128,25 @@ enum HistoryCommands {
     },
 }
 
-#[tokio::main]
-async fn main() -> anyhow::Result<()> {
+fn main() -> anyhow::Result<()> {
+    let args: Vec<String> = std::env::args().collect();
+    // If no arguments provided or launched from macOS GUI (which passes -psn argument)
+    let is_gui = args.len() == 1 || (args.len() == 2 && args[1].starts_with("-psn"));
+    if is_gui {
+        #[cfg(feature = "gui")]
+        {
+            println!("🚀 Starting GUI mode...");
+            hangar_lib::run();
+            return Ok(());
+        }
+    }
+
+    // Otherwise, load Tokio runtime and run CLI
+    let rt = tokio::runtime::Runtime::new()?;
+    rt.block_on(async { async_main().await })
+}
+
+async fn async_main() -> anyhow::Result<()> {
     // Ensure basic config exists in user directory
     storage::ensure_basic_config_exists()?;
     storage::ensure_groups_config_exists()?;
@@ -382,11 +399,11 @@ async fn main() -> anyhow::Result<()> {
 
                     if let Some(mut sub) = found_sub {
                         println!("📥 Updating subscription: {}...", sub.name);
-                        
+
                         match subscription::download_subscription(&sub).await {
                             Ok(path) => {
                                 println!("✅ Downloaded to {:?}", path);
-                                
+
                                 // Parse and get proxy summary
                                 match subscription::parse_proxies_summary(&sub.id) {
                                     Ok((count, names)) => {
@@ -396,12 +413,12 @@ async fn main() -> anyhow::Result<()> {
                                                 .format("%Y-%m-%d %H:%M:%S")
                                                 .to_string(),
                                         );
-                                        
+
                                         println!("✅ Found {} nodes:", count);
                                         for name in &names {
                                             println!("   - {}", name);
                                         }
-                                        
+
                                         // Update the subscription in the list
                                         for s in &mut subs {
                                             if s.id == sub.id {
@@ -410,7 +427,7 @@ async fn main() -> anyhow::Result<()> {
                                                 break;
                                             }
                                         }
-                                        
+
                                         storage::save_subscriptions(&subs)?;
                                         println!("✅ Subscription updated successfully");
                                     }
@@ -955,7 +972,7 @@ async fn main() -> anyhow::Result<()> {
         }
         Commands::ForceUpdateConfig => {
             println!("🔄 Force updating configuration from built-in resources...");
-            
+
             // Hardcode the built-in config content using include_str!
             // This ensures the config is embedded in the binary
             let basic_builtin = include_str!("../resources/basic.yml");
@@ -971,9 +988,13 @@ async fn main() -> anyhow::Result<()> {
                 if dest_path.exists() {
                     let backup_path = dest_path.with_extension("yml.bak");
                     std::fs::copy(&dest_path, &backup_path)?;
-                    println!("📦 Created backup of {:?} to {:?}", dest_path.file_name().unwrap(), backup_path);
+                    println!(
+                        "📦 Created backup of {:?} to {:?}",
+                        dest_path.file_name().unwrap(),
+                        backup_path
+                    );
                 }
-                
+
                 std::fs::write(&dest_path, content)?;
                 println!("✅ Successfully updated {:?}", dest_path);
             }

@@ -542,7 +542,8 @@ fn get_versions_diff(id1: String, id2: Option<String>) -> Result<Vec<version::Di
     let content2 = if let Some(id) = id2 {
         version::get_version_content(&id).map_err(|e| e.to_string())?
     } else {
-        let current_path = storage::get_current_config_path_for_diff().map_err(|e| e.to_string())?;
+        let current_path =
+            storage::get_current_config_path_for_diff().map_err(|e| e.to_string())?;
         if current_path.exists() {
             std::fs::read_to_string(&current_path).map_err(|e| e.to_string())?
         } else {
@@ -630,6 +631,7 @@ async fn refresh_rules() -> Result<String, String> {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_cli::init())
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             greet,

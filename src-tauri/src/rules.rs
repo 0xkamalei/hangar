@@ -31,19 +31,22 @@ pub fn get_default_builtin_rules() -> Vec<BuiltinRule> {
         BuiltinRule {
             name: "reject".to_string(),
             description: "广告域名".to_string(),
-            url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/reject.txt".to_string(),
+            url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/reject.txt"
+                .to_string(),
             behavior: "domain".to_string(),
         },
         BuiltinRule {
             name: "proxy".to_string(),
             description: "代理域名".to_string(),
-            url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/proxy.txt".to_string(),
+            url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/proxy.txt"
+                .to_string(),
             behavior: "domain".to_string(),
         },
         BuiltinRule {
             name: "direct".to_string(),
             description: "直连域名".to_string(),
-            url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/direct.txt".to_string(),
+            url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/direct.txt"
+                .to_string(),
             behavior: "domain".to_string(),
         },
         BuiltinRule {
@@ -55,37 +58,43 @@ pub fn get_default_builtin_rules() -> Vec<BuiltinRule> {
         BuiltinRule {
             name: "greatfire".to_string(),
             description: "GreatFire 域名".to_string(),
-            url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/greatfire.txt".to_string(),
+            url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/greatfire.txt"
+                .to_string(),
             behavior: "domain".to_string(),
         },
         BuiltinRule {
             name: "tld-not-cn".to_string(),
             description: "非中国顶级域".to_string(),
-            url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/tld-not-cn.txt".to_string(),
+            url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/tld-not-cn.txt"
+                .to_string(),
             behavior: "domain".to_string(),
         },
         BuiltinRule {
             name: "telegramcidr".to_string(),
             description: "Telegram IP 段".to_string(),
-            url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/telegramcidr.txt".to_string(),
+            url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/telegramcidr.txt"
+                .to_string(),
             behavior: "ipcidr".to_string(),
         },
         BuiltinRule {
             name: "cncidr".to_string(),
             description: "中国 IP 段".to_string(),
-            url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/cncidr.txt".to_string(),
+            url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/cncidr.txt"
+                .to_string(),
             behavior: "ipcidr".to_string(),
         },
         BuiltinRule {
             name: "lancidr".to_string(),
             description: "局域网 IP 段".to_string(),
-            url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/lancidr.txt".to_string(),
+            url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/lancidr.txt"
+                .to_string(),
             behavior: "ipcidr".to_string(),
         },
         BuiltinRule {
             name: "applications".to_string(),
             description: "需代理的程序".to_string(),
-            url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/applications.txt".to_string(),
+            url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/applications.txt"
+                .to_string(),
             behavior: "classical".to_string(),
         },
     ]
@@ -93,7 +102,10 @@ pub fn get_default_builtin_rules() -> Vec<BuiltinRule> {
 
 /// Get the builtin rules cache directory
 pub fn get_builtin_rules_cache_dir() -> Result<PathBuf> {
-    let dir = get_hangar_dir()?.join("cache").join("rules").join("builtin");
+    let dir = get_hangar_dir()?
+        .join("cache")
+        .join("rules")
+        .join("builtin");
     fs::create_dir_all(&dir).context("Failed to create builtin rules cache directory")?;
     Ok(dir)
 }
@@ -118,10 +130,9 @@ pub fn load_rule_sources() -> Result<Vec<RuleSource>> {
         return Ok(vec![]);
     }
 
-    let content = fs::read_to_string(&path)
-        .context("Failed to read rule_sources.json")?;
-    let sources: Vec<RuleSource> = serde_json::from_str(&content)
-        .context("Failed to parse rule_sources.json")?;
+    let content = fs::read_to_string(&path).context("Failed to read rule_sources.json")?;
+    let sources: Vec<RuleSource> =
+        serde_json::from_str(&content).context("Failed to parse rule_sources.json")?;
 
     Ok(sources)
 }
@@ -129,10 +140,9 @@ pub fn load_rule_sources() -> Result<Vec<RuleSource>> {
 /// Save rule sources to disk
 pub fn save_rule_sources(sources: &[RuleSource]) -> Result<()> {
     let path = get_rule_sources_path()?;
-    let content = serde_json::to_string_pretty(sources)
-        .context("Failed to serialize rule sources")?;
-    fs::write(&path, content)
-        .context("Failed to write rule_sources.json")?;
+    let content =
+        serde_json::to_string_pretty(sources).context("Failed to serialize rule sources")?;
+    fs::write(&path, content).context("Failed to write rule_sources.json")?;
     Ok(())
 }
 
@@ -256,7 +266,8 @@ pub fn generate_rule_providers() -> Result<HashMap<String, serde_yaml::Value>> {
             url: rule.url.clone(),
             path: format!("./ruleset/{}.yaml", rule.name),
             interval: 86400,
-        }).context("Failed to serialize rule provider")?;
+        })
+        .context("Failed to serialize rule provider")?;
 
         providers.insert(rule.name, provider);
     }
@@ -281,7 +292,8 @@ pub fn generate_rule_providers() -> Result<HashMap<String, serde_yaml::Value>> {
             url: source.url.clone(),
             path: format!("./ruleset/custom_{}.yaml", source.id),
             interval: 86400,
-        }).context("Failed to serialize custom rule provider")?;
+        })
+        .context("Failed to serialize custom rule provider")?;
 
         // Use sanitized name as key
         let key = source.name.to_lowercase().replace(' ', "_");

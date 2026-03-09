@@ -75,17 +75,21 @@ skip-cert-verify: true
 sni: sni.example.com
 "#;
         let node: ProxyNode = serde_yaml::from_str(yaml_str).unwrap();
-        
+
         // Check order in extra
         let extra_keys: Vec<_> = node.extra.keys().cloned().collect();
-        assert_eq!(extra_keys, vec!["password", "udp", "skip-cert-verify", "sni"]);
+        assert_eq!(
+            extra_keys,
+            vec!["password", "udp", "skip-cert-verify", "sni"]
+        );
 
         let serialized = serde_yaml::to_string(&node).unwrap();
         println!("{}", serialized);
-        
+
         // The serialized YAML should have keys in the same order
         // Note: name, type, server, port come first because they are fixed fields in the struct
-        assert!(serialized.contains("password: pass\nudp: true\nskip-cert-verify: true\nsni: sni.example.com"));
+        assert!(serialized
+            .contains("password: pass\nudp: true\nskip-cert-verify: true\nsni: sni.example.com"));
     }
 }
 
