@@ -217,14 +217,37 @@ async fn async_main() -> anyhow::Result<()> {
                 }
                 SubCommands::Remove { id } => {
                     let mut subs = storage::load_subscriptions().unwrap_or_default();
-                    // Logic to remove by ID or index...
-                    let mut to_remove_id = None;
-                    if let Ok(idx) = id.parse::<usize>() {
-                        if idx < subs.len() {
-                            to_remove_id = Some(subs[idx].id.clone());
+                    let mut to_remove_id: Option<String> = None;
+                    let mut removed_name: Option<String> = None;
+
+                    // Try to find subscription by name first (most user-friendly)
+                    for sub in &subs {
+                        if sub.name == id {
+                            to_remove_id = Some(sub.id.clone());
+                            removed_name = Some(sub.name.clone());
+                            break;
                         }
-                    } else {
-                        to_remove_id = Some(id.clone());
+                    }
+
+                    // If not found by name, try by ID
+                    if to_remove_id.is_none() {
+                        for sub in &subs {
+                            if sub.id == id {
+                                to_remove_id = Some(sub.id.clone());
+                                removed_name = Some(sub.name.clone());
+                                break;
+                            }
+                        }
+                    }
+
+                    // If still not found, try by index
+                    if to_remove_id.is_none() {
+                        if let Ok(idx) = id.parse::<usize>() {
+                            if idx < subs.len() {
+                                to_remove_id = Some(subs[idx].id.clone());
+                                removed_name = Some(subs[idx].name.clone());
+                            }
+                        }
                     }
 
                     if let Some(rid) = to_remove_id {
@@ -232,7 +255,7 @@ async fn async_main() -> anyhow::Result<()> {
                         subs.retain(|s| s.id != rid);
                         if subs.len() < len_before {
                             storage::save_subscriptions(&subs)?;
-                            println!("✅ Removed subscription: {}", rid);
+                            println!("✅ Removed subscription: {} ({})", removed_name.unwrap_or_default(), rid);
 
                             // Remove cache file
                             match storage::get_subscription_cache_path(&rid) {
@@ -251,6 +274,9 @@ async fn async_main() -> anyhow::Result<()> {
                         } else {
                             println!("❌ Subscription not found.");
                         }
+                    } else {
+                        println!("❌ Subscription not found: '{}'", id);
+                        println!("   Try using the subscription name, ID, or index from 'hangar sub list'");
                     }
                 }
                 SubCommands::Enable { id } => {
